@@ -5,6 +5,1615 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Fam Plan">
+<meta name="theme-color" content="#F7F5F2">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODAgMTgwIj4KICA8cmVjdCB3aWR0aD0iMTgwIiBoZWlnaHQ9IjE4MCIgcng9IjQwIiBmaWxsPSIjRjdGNUYyIi8+CiAgPHRleHQgeD0iOTAiIHk9IjEyNSIgZm9udC1zaXplPSIxMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcHBsZSBDb2xvciBFbW9qaSwgU2Vnb2UgVUkgRW1vamksIHNhbnMtc2VyaWYiPvCfj6E8L3RleHQ+Cjwvc3ZnPg==">
+<title>Fam Plan</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<style>
+:root{--bg:#F7F5F2;--white:#FFFFFF;--angus:#E07B54;--julia:#5B9E72;--bailey:#E8B84B;--beau:#5B8DD9;--family:#9B7BB5;--arlo:#A0785A;--tilly:#C47FA0;--text:#1A1612;--text-mid:#5C4E3E;--text-light:#9C8E82;--border:#E5DDD5;--hover:#F0EAE2;--radius:14px;--shadow:0 2px 12px rgba(26,22,18,0.08);--shadow-lg:0 8px 32px rgba(26,22,18,0.15);--nav-h:64px;--header-h:56px;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
+html,body{height:100%;overflow:hidden;background:var(--bg);}
+body{font-family:'Nunito Sans',sans-serif;color:var(--text);font-size:15px;overscroll-behavior:none;}
+.screen{position:fixed;inset:0;display:none;flex-direction:column;background:var(--bg);}
+.screen.active{display:flex;}
+#screen-picker{background:var(--white);justify-content:center;align-items:center;}
+.picker-inner{width:100%;max-width:420px;padding:40px 28px;}
+.picker-logo{text-align:center;margin-bottom:36px;}
+.picker-logo h1{font-family:'Nunito',sans-serif;font-size:26px;font-weight:900;color:var(--text);}
+.picker-logo p{font-size:13px;color:var(--text-light);margin-top:4px;font-weight:600;}
+.picker-title{font-size:13px;font-weight:700;color:var(--text-light);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:14px;}
+.picker-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+.picker-btn{background:var(--bg);border:2px solid var(--border);border-radius:16px;padding:20px 14px;text-align:center;cursor:pointer;transition:all 0.18s;}
+.picker-btn:active{transform:scale(0.96);}
+.picker-btn .pb-emoji{font-size:32px;margin-bottom:8px;}
+.picker-btn .pb-name{font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;color:var(--text);}
+.picker-btn .pb-sub{font-size:11px;color:var(--text-light);margin-top:3px;font-weight:600;}
+.enter-btn{width:100%;background:var(--text);color:#fff;border:none;border-radius:14px;padding:15px;font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;cursor:pointer;margin-top:20px;transition:opacity 0.15s;}
+.enter-btn:active{opacity:0.85;}
+.enter-btn:disabled{opacity:0.35;cursor:not-allowed;}
+.sync-status{text-align:center;font-size:11px;color:var(--text-light);margin-top:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px;}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:#ccc;}
+.sync-dot.ok{background:#5B9E72;}
+.sync-dot.syncing{background:#E8B84B;animation:pulse 1s infinite;}
+.sync-dot.err{background:#E07B54;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+#screen-app{background:var(--bg);}
+.app-header{height:var(--header-h);background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;flex-shrink:0;position:relative;z-index:10;}
+.ah-left{display:flex;align-items:center;gap:10px;}
+.ah-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.ah-title{font-family:'Nunito',sans-serif;font-size:17px;font-weight:900;color:var(--text);}
+.ah-sub{font-size:11px;color:var(--text-light);font-weight:600;margin-top:1px;}
+.ah-right{display:flex;gap:6px;align-items:center;}
+.ah-sync{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--text-light);cursor:pointer;padding:6px 10px;background:var(--bg);border-radius:10px;border:1px solid var(--border);}
+.ah-icon-btn{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:6px 10px;font-size:11px;font-weight:700;color:var(--text-light);cursor:pointer;}
+.app-content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--nav-h) + 12px);}
+.bottom-nav{height:var(--nav-h);background:var(--white);border-top:1px solid var(--border);display:flex;align-items:stretch;position:fixed;bottom:0;left:0;right:0;z-index:20;padding-bottom:env(safe-area-inset-bottom);}
+.bn-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;border:none;background:transparent;padding:8px 4px 6px;transition:all 0.15s;position:relative;}
+.bn-btn:active{background:var(--hover);}
+.bn-icon{font-size:20px;transition:transform 0.15s;}
+.bn-label{font-size:9px;font-weight:700;color:var(--text-light);letter-spacing:0.04em;text-transform:uppercase;transition:color 0.15s;}
+.bn-btn.active .bn-icon{transform:scale(1.15);}
+.bn-btn.active .bn-label{color:var(--text);}
+.bn-btn.active::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:24px;height:3px;border-radius:2px 2px 0 0;background:var(--text);}
+.fab{position:fixed;bottom:calc(var(--nav-h) + 14px);right:16px;width:52px;height:52px;border-radius:50%;background:var(--text);color:#fff;border:none;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(26,22,18,0.25);z-index:15;transition:transform 0.15s;}
+.fab:active{transform:scale(0.92);}
+/* calendar */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px;}
+.cal-nav-btn{background:var(--bg);border:1px solid var(--border);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;color:var(--text-mid);}
+.cal-nav-label{font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;}
+.cal-view-tabs{display:flex;background:var(--bg);border-radius:10px;padding:3px;margin:0 16px 12px;border:1px solid var(--border);}
+.cvt-btn{flex:1;padding:7px 4px;border-radius:8px;border:none;background:transparent;font-family:'Nunito Sans',sans-serif;font-size:11px;font-weight:700;color:var(--text-light);cursor:pointer;transition:all 0.15s;}
+.cvt-btn.active{background:var(--white);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.1);}
+.month-dow{display:grid;grid-template-columns:repeat(7,1fr);padding:0 16px;margin-bottom:4px;}
+.dow-lbl{text-align:center;font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:0.06em;text-transform:uppercase;padding:4px 0;}
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:0 16px;}
+.mc{background:var(--white);border-radius:8px;min-height:54px;padding:5px 4px;cursor:pointer;border:1.5px solid transparent;position:relative;}
+.mc.other{background:#F3F0EC;opacity:0.5;}
+.mc.today{border-color:var(--text);}
+.mc .cn{font-size:11px;font-weight:700;color:var(--text-mid);text-align:center;width:20px;height:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 3px;}
+.mc.today .cn{background:var(--text);color:#fff;border-radius:50%;}
+.mc-dots{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;}
+.mc-dot{width:6px;height:6px;border-radius:50%;}
+.week-grid{display:grid;grid-template-columns:44px repeat(7,1fr);gap:2px;padding:0 16px;}
+.week-col-hdr{text-align:center;padding:6px 2px 8px;}
+.week-col-day{font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:0.05em;text-transform:uppercase;}
+.week-col-num{font-size:18px;font-weight:900;font-family:'Nunito',sans-serif;color:var(--text-mid);margin-top:1px;}
+.week-col-num.today-num{background:var(--text);color:#fff;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;margin:1px auto 0;}
+.week-time-col{display:flex;flex-direction:column;}
+.week-time-lbl{height:48px;display:flex;align-items:flex-start;justify-content:flex-end;padding-right:6px;padding-top:3px;font-size:9px;color:var(--text-light);font-weight:600;}
+.week-day-col{background:var(--white);border-radius:6px;min-height:480px;position:relative;border:1px solid var(--border);}
+.week-day-col.today-col{border-color:var(--text);}
+.week-ev{border-radius:4px;padding:2px 4px;font-size:9px;font-weight:700;color:#fff;cursor:pointer;position:absolute;left:1px;right:1px;overflow:hidden;}
+.day-scroll{padding:14px 16px;}
+.day-hdr{margin-bottom:12px;}
+.day-hdr h2{font-family:'Nunito',sans-serif;font-size:20px;font-weight:900;}
+.day-hdr p{font-size:12px;color:var(--text-light);margin-top:2px;}
+.day-ev-card{background:var(--white);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;gap:10px;align-items:stretch;box-shadow:var(--shadow);}
+.day-ev-bar{width:4px;border-radius:2px;flex-shrink:0;}
+.day-ev-name{font-size:14px;font-weight:700;}
+.day-ev-meta{font-size:11px;color:var(--text-light);margin-top:3px;}
+.day-empty{text-align:center;padding:28px 0;color:var(--text-light);font-size:13px;font-weight:600;}
+.agenda-day{margin-bottom:16px;}
+.agenda-day-hdr{display:flex;align-items:center;gap:10px;padding:0 16px;margin-bottom:8px;}
+.agenda-circle{width:34px;height:34px;border-radius:50%;background:var(--bg);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;font-size:14px;font-weight:900;color:var(--text-mid);flex-shrink:0;}
+.agenda-circle.today{background:var(--text);border-color:var(--text);color:#fff;}
+.agenda-label{font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;}
+.agenda-sub{font-size:11px;color:var(--text-light);}
+.agenda-ev{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--white);margin:0 16px 4px;border-radius:10px;cursor:pointer;}
+.agenda-ev-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.agenda-ev-name{font-size:13px;font-weight:700;flex:1;}
+/* tasks */
+.tasks-pad{padding:14px 16px;}
+.stars-bar{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none;}
+.stars-bar::-webkit-scrollbar{display:none;}
+.star-chip{background:var(--white);border-radius:12px;padding:10px 14px;flex-shrink:0;text-align:center;box-shadow:var(--shadow);}
+.star-chip-name{font-size:11px;font-weight:700;color:var(--text-mid);}
+.star-chip-val{font-size:16px;font-weight:900;color:#F5B300;font-family:'Nunito',sans-serif;}
+.person-section{margin-bottom:16px;}
+.person-section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.person-section-name{display:flex;align-items:center;gap:7px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;}
+.person-dot{width:10px;height:10px;border-radius:50%;}
+.task-row{background:var(--white);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:4px;cursor:pointer;transition:opacity 0.15s;}
+.task-row:active{opacity:0.75;}
+.task-cb{width:24px;height:24px;border-radius:7px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.task-cb.done{border-color:transparent;}
+.task-cb.done::after{content:'checkmark';font-size:0;border-color:transparent;}
+.task-name{flex:1;font-size:13px;font-weight:600;}
+.task-name.done{text-decoration:line-through;color:var(--text-light);}
+.task-stars-val{font-size:11px;color:#F5B300;font-weight:700;}
+.quick-add-row{display:flex;gap:8px;margin-top:6px;}
+.quick-inp{flex:1;background:var(--bg);border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-family:'Nunito Sans',sans-serif;font-size:13px;color:var(--text);outline:none;}
+.quick-inp:focus{border-color:var(--text);}
+.quick-add-btn{background:var(--text);color:#fff;border:none;border-radius:10px;width:38px;height:38px;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+/* meals */
+.meals-pad{padding:14px 16px;}
+.meal-week-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px;scrollbar-width:none;}
+.meal-week-scroll::-webkit-scrollbar{display:none;}
+.meal-day-pill{flex-shrink:0;background:var(--white);border-radius:12px;padding:10px 12px;min-width:90px;cursor:pointer;border:2px solid transparent;transition:all 0.15s;}
+.meal-day-pill.today{border-color:var(--text);}
+.meal-day-pill:active{transform:scale(0.96);}
+.mdp-name{font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:0.07em;text-transform:uppercase;}
+.mdp-date{font-size:18px;font-weight:900;font-family:'Nunito',sans-serif;color:var(--text);margin:2px 0 6px;}
+.meal-slot-sm{border-radius:5px;padding:3px 6px;font-size:10px;font-weight:700;margin-bottom:2px;}
+.meal-slot-sm.breakfast{background:#FFF3E0;color:#E65100;}
+.meal-slot-sm.lunch{background:#E8F5E9;color:#2E7D32;}
+.meal-slot-sm.dinner{background:#EDE7F6;color:#4527A0;}
+.meal-slot-empty-sm{border:1.5px dashed var(--border);border-radius:5px;padding:3px 6px;font-size:10px;color:var(--text-light);margin-bottom:2px;}
+.meal-detail-card{background:var(--white);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
+.meal-detail-date{font-family:'Nunito',sans-serif;font-size:16px;font-weight:900;margin-bottom:12px;}
+.meal-type-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.meal-type-row:last-child{border-bottom:none;}
+.meal-type-badge{border-radius:6px;padding:4px 9px;font-size:11px;font-weight:700;}
+.meal-type-badge.breakfast{background:#FFF3E0;color:#E65100;}
+.meal-type-badge.lunch{background:#E8F5E9;color:#2E7D32;}
+.meal-type-badge.dinner{background:#EDE7F6;color:#4527A0;}
+.meal-type-name{flex:1;font-size:13px;font-weight:600;}
+.meal-add-link{font-size:12px;color:var(--text-light);font-weight:600;}
+.recipe-row{background:var(--white);border-radius:12px;padding:12px 14px;cursor:pointer;margin-bottom:6px;}
+.recipe-row:active{opacity:0.75;}
+.recipe-cat{font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:0.07em;text-transform:uppercase;margin-bottom:2px;}
+.recipe-name{font-size:14px;font-weight:700;}
+/* lists */
+.lists-pad{padding:14px 16px;}
+.list-card-m{background:var(--white);border-radius:var(--radius);padding:14px;margin-bottom:12px;box-shadow:var(--shadow);}
+.list-card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.list-card-title-m{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;display:flex;align-items:center;gap:7px;}
+.list-item-m{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.list-item-m:last-child{border-bottom:none;}
+.list-cb{width:22px;height:22px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s;}
+.list-cb.done{border-color:transparent;}
+.list-item-text-m{flex:1;font-size:13px;font-weight:600;}
+.list-item-text-m.done{text-decoration:line-through;color:var(--text-light);}
+/* routines / rewards */
+.routines-pad{padding:14px 16px;}
+.routine-period{margin-bottom:16px;}
+.routine-period-hdr{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.rp-icon{font-size:18px;}
+.rp-title{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;}
+.rp-sub{font-size:11px;color:var(--text-light);font-weight:600;}
+.routine-row{background:var(--white);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:4px;cursor:pointer;}
+.routine-row:active{opacity:0.75;}
+.rt-who{font-size:10px;font-weight:700;margin-top:1px;}
+.rewards-pad{padding:14px 16px;}
+.balance-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.balance-card{background:var(--white);border-radius:var(--radius);padding:14px;text-align:center;box-shadow:var(--shadow);}
+.bc-emoji{font-size:24px;margin-bottom:4px;}
+.bc-name{font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;}
+.bc-stars{font-size:22px;font-weight:900;color:#F5B300;font-family:'Nunito',sans-serif;}
+.bc-btns{display:flex;gap:5px;justify-content:center;margin-top:7px;}
+.bc-adj{background:var(--bg);border:1px solid var(--border);border-radius:7px;padding:4px 10px;font-size:12px;font-weight:700;cursor:pointer;}
+.reward-card-m{background:var(--white);border-radius:var(--radius);padding:14px;margin-bottom:10px;box-shadow:var(--shadow);}
+.reward-card-name{font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;margin-bottom:4px;}
+.reward-card-meta{font-size:12px;color:var(--text-light);margin-bottom:10px;}
+.reward-progress{background:var(--bg);border-radius:6px;height:8px;overflow:hidden;margin-bottom:6px;}
+.reward-progress-bar{height:100%;border-radius:6px;transition:width 0.4s;}
+.reward-progress-label{font-size:11px;color:var(--text-light);font-weight:600;}
+.redeem-btn{background:#F5B300;color:#fff;border:none;border-radius:9px;padding:8px 16px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:800;cursor:pointer;margin-top:8px;}
+/* sheets */
+.sheet-overlay{position:fixed;inset:0;background:rgba(26,22,18,0.45);z-index:50;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+.sheet-overlay.open{display:flex;}
+.sheet{background:var(--white);border-radius:22px 22px 0 0;width:100%;max-width:480px;padding:20px 20px calc(20px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;}
+.sheet-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px;}
+.sheet-title{font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;margin-bottom:18px;}
+.form-group{margin-bottom:14px;}
+.form-label{font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:0.08em;text-transform:uppercase;display:block;margin-bottom:5px;}
+.form-input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 13px;font-family:'Nunito Sans',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;-webkit-appearance:none;}
+.form-input:focus{border-color:var(--text);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.profile-chips{display:flex;gap:6px;flex-wrap:wrap;}
+.pc-btn{padding:7px 13px;border-radius:9px;border:2px solid var(--border);background:transparent;font-family:'Nunito Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;color:var(--text-mid);transition:all 0.15s;}
+.pc-btn.sel{color:#fff;border-color:transparent;}
+.sheet-btns{display:flex;gap:8px;margin-top:18px;}
+.sheet-save{flex:1;background:var(--text);color:#fff;border:none;border-radius:12px;padding:14px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;cursor:pointer;}
+.sheet-cancel{background:var(--bg);color:var(--text-mid);border:1.5px solid var(--border);border-radius:12px;padding:14px 18px;font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;cursor:pointer;}
+.sheet-del{background:#FEE2E2;color:#DC2626;border:none;border-radius:12px;padding:14px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+/* confetti / toast */
+.confetti-wrap{position:fixed;inset:0;pointer-events:none;z-index:100;overflow:hidden;}
+.confetti-piece{position:absolute;font-size:22px;animation:fall 2s ease-in forwards;}
+@keyframes fall{from{transform:translateY(-30px) rotate(0deg);opacity:1;}to{transform:translateY(110vh) rotate(720deg);opacity:0;}}
+.toast{position:fixed;top:calc(var(--header-h) + 10px);left:50%;transform:translateX(-50%);background:var(--text);color:#fff;border-radius:20px;padding:8px 18px;font-size:12px;font-weight:700;z-index:200;opacity:0;transition:opacity 0.3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+/* loading */
+.loading-overlay{position:fixed;inset:0;background:var(--white);display:flex;align-items:center;justify-content:center;z-index:300;transition:opacity 0.4s;}
+.loading-overlay.hidden{opacity:0;pointer-events:none;}
+.loading-inner{text-align:center;}
+.loading-logo{font-size:40px;margin-bottom:8px;}
+.loading-text{font-family:'Nunito',sans-serif;font-size:18px;font-weight:900;color:var(--text);}
+.loading-sub{font-size:12px;color:var(--text-light);margin-top:4px;}
+.spinner{width:20px;height:20px;border:2.5px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin 0.7s linear infinite;margin:12px auto 0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+/* firebase live indicator */
+.live-dot{width:7px;height:7px;border-radius:50%;background:#5B9E72;display:inline-block;animation:pulse 2s infinite;}
+</style>
+</head>
+<body>
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-inner">
+    <div class="loading-logo">🏡</div>
+    <div class="loading-text">Fam Plan</div>
+    <div class="loading-sub" id="loading-sub">Connecting to Firebase...</div>
+    <div class="spinner"></div>
+  </div>
+</div>
+
+<div class="screen active" id="screen-picker">
+  <div class="picker-inner">
+    <div class="picker-logo"><h1>🏡 Fam Plan</h1><p>Moyes-Whittaker Family</p></div>
+    <div class="picker-title">Who's opening the app?</div>
+    <div class="picker-grid" id="picker-grid"></div>
+    <button class="enter-btn" id="enter-btn" disabled onclick="enterApp()">Enter</button>
+    <div class="sync-status"><div class="sync-dot" id="sync-dot-picker"></div><span id="sync-label-picker">Connecting...</span></div>
+  </div>
+</div>
+
+<div class="screen" id="screen-app">
+  <div class="app-header">
+    <div class="ah-left">
+      <div class="ah-avatar" id="ah-avatar"></div>
+      <div><div class="ah-title">Fam Plan</div><div class="ah-sub" id="ah-sub"></div></div>
+    </div>
+    <div class="ah-right">
+      <button class="ah-icon-btn" onclick="openSheet('sheet-backup')">💾</button>
+      <div class="ah-sync" id="ah-sync-btn">
+        <div class="sync-dot" id="sync-dot-app" style="width:8px;height:8px;"></div>
+        <span id="sync-label-app">Live</span>
+      </div>
+    </div>
+  </div>
+  <div class="app-content" id="app-content"></div>
+  <nav class="bottom-nav">
+    <button class="bn-btn active" onclick="setTab('calendar')" id="nav-calendar"><span class="bn-icon">📅</span><span class="bn-label">Calendar</span></button>
+    <button class="bn-btn" onclick="setTab('tasks')" id="nav-tasks"><span class="bn-icon">✅</span><span class="bn-label">Tasks</span></button>
+    <button class="bn-btn" onclick="setTab('meals')" id="nav-meals"><span class="bn-icon">🍽️</span><span class="bn-label">Meals</span></button>
+    <button class="bn-btn" onclick="setTab('lists')" id="nav-lists"><span class="bn-icon">📝</span><span class="bn-label">Lists</span></button>
+    <button class="bn-btn" onclick="setTab('more')" id="nav-more"><span class="bn-icon">&#8943;</span><span class="bn-label">More</span></button>
+  </nav>
+  <button class="fab" id="fab" onclick="openAdd()">+</button>
+</div>
+
+<!-- EVENT SHEET -->
+<div class="sheet-overlay" id="sheet-event" onclick="sheetOverlayClick(event,'sheet-event')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="sheet-event-title">Add Event</div>
+    <div class="form-group"><label class="form-label">Event Name</label><input class="form-input" id="ev-name" placeholder="e.g. School pickup"/></div>
+    <div class="form-group"><label class="form-label">Date</label><input class="form-input" id="ev-date" type="date"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Start Time</label><input class="form-input" id="ev-time" type="time"/></div>
+      <div class="form-group"><label class="form-label">End Time <span style="font-weight:400;opacity:0.6;">(optional)</span></label><input class="form-input" id="ev-end-time" type="time"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Who</label><div class="profile-chips" id="ev-who"></div></div>
+    <div class="form-group"><label class="form-label">Repeats</label>
+      <select class="form-input" id="ev-repeat"><option value="none">Never</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Notes</label><input class="form-input" id="ev-notes" placeholder="Optional..."/></div>
+    <div class="sheet-btns">
+      <button class="sheet-cancel" onclick="closeSheet('sheet-event')">Cancel</button>
+      <button class="sheet-del" id="ev-del" onclick="deleteEvent()" style="display:none">Delete</button>
+      <button class="sheet-save" onclick="saveEvent()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- TASK SHEET -->
+<div class="sheet-overlay" id="sheet-task" onclick="sheetOverlayClick(event,'sheet-task')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="sheet-task-title">Add Chore</div>
+    <div class="form-group"><label class="form-label">Chore Name</label><input class="form-input" id="tk-name" placeholder="e.g. Feed the dog"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Start Time <span style="font-weight:400;opacity:0.6;">(optional)</span></label><input class="form-input" id="tk-time" type="time"/></div>
+      <div class="form-group"><label class="form-label">End Time <span style="font-weight:400;opacity:0.6;">(optional)</span></label><input class="form-input" id="tk-end-time" type="time"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Assigned To</label><div class="profile-chips" id="tk-who"></div></div>
+    <div class="form-group"><label class="form-label">Repeats</label>
+      <select class="form-input" id="tk-repeat"><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="none">Once</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Stars</label>
+      <select class="form-input" id="tk-stars"><option value="1">1 star</option><option value="2">2 stars</option><option value="3" selected>3 stars</option><option value="5">5 stars</option></select>
+    </div>
+    <div class="sheet-btns">
+      <button class="sheet-cancel" onclick="closeSheet('sheet-task')">Cancel</button>
+      <button class="sheet-del" id="tk-del" onclick="deleteTask()" style="display:none">Delete</button>
+      <button class="sheet-save" onclick="saveTask()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- MEAL SHEET -->
+<div class="sheet-overlay" id="sheet-meal" onclick="sheetOverlayClick(event,'sheet-meal')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="sheet-meal-title">Plan Meal</div>
+    <div class="form-group"><label class="form-label">Meal Type</label>
+      <div style="display:flex;gap:7px;" id="meal-type-btns">
+        <button class="pc-btn sel" data-t="breakfast" onclick="selMealType(this)" style="background:#FFF3E0;color:#E65100;border-color:#E65100;">Breakfast</button>
+        <button class="pc-btn" data-t="lunch" onclick="selMealType(this)">Lunch</button>
+        <button class="pc-btn" data-t="dinner" onclick="selMealType(this)">Dinner</button>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Meal</label><input class="form-input" id="ml-name" placeholder="e.g. Spaghetti Bolognese"/></div>
+    <div class="form-group" id="ml-date-group"><label class="form-label">Date</label><input class="form-input" id="ml-date" type="date"/></div>
+    <div class="form-group"><label class="form-label">Notes / Recipe</label><textarea class="form-input" id="ml-notes" rows="2" placeholder="Optional..." style="resize:none;"></textarea></div>
+    <div class="form-group"><label style="display:flex;align-items:center;gap:7px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text-mid);"><input type="checkbox" id="ml-save-recipe" style="width:16px;height:16px;"/> Save to Recipe Box</label></div>
+    <div class="sheet-btns">
+      <button class="sheet-cancel" onclick="closeSheet('sheet-meal')">Cancel</button>
+      <button class="sheet-del" id="ml-del" onclick="deleteMeal()" style="display:none">Delete</button>
+      <button class="sheet-save" onclick="saveMeal()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIST SHEET -->
+<div class="sheet-overlay" id="sheet-list" onclick="sheetOverlayClick(event,'sheet-list')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">New List</div>
+    <div class="form-group"><label class="form-label">Name</label><input class="form-input" id="ls-name" placeholder="e.g. Grocery List"/></div>
+    <div class="form-group"><label class="form-label">Icon</label>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;" id="ls-icon-btns">
+        <button class="pc-btn sel" data-ic="🛒" onclick="selListIcon(this)" style="background:var(--text);color:#fff;">🛒</button>
+        <button class="pc-btn" data-ic="📋" onclick="selListIcon(this)">📋</button>
+        <button class="pc-btn" data-ic="🏫" onclick="selListIcon(this)">🏫</button>
+        <button class="pc-btn" data-ic="🌿" onclick="selListIcon(this)">🌿</button>
+        <button class="pc-btn" data-ic="🏡" onclick="selListIcon(this)">🏡</button>
+        <button class="pc-btn" data-ic="💊" onclick="selListIcon(this)">💊</button>
+      </div>
+    </div>
+    <div class="sheet-btns">
+      <button class="sheet-cancel" onclick="closeSheet('sheet-list')">Cancel</button>
+      <button class="sheet-save" onclick="saveList()">Create</button>
+    </div>
+  </div>
+</div>
+
+<!-- ROUTINE SHEET -->
+<div class="sheet-overlay" id="sheet-routine" onclick="sheetOverlayClick(event,'sheet-routine')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="sheet-routine-title">Add Routine Step</div>
+    <div class="form-group"><label class="form-label">Step Name</label><input class="form-input" id="rt-name" placeholder="e.g. Brush teeth"/></div>
+    <div class="form-group"><label class="form-label">Time of Day</label>
+      <div style="display:flex;gap:7px;" id="rt-period-btns">
+        <button class="pc-btn sel" data-p="morning" onclick="selRtPeriod(this)" style="background:var(--text);color:#fff;">Morning</button>
+        <button class="pc-btn" data-p="afternoon" onclick="selRtPeriod(this)">Afternoon</button>
+        <button class="pc-btn" data-p="evening" onclick="selRtPeriod(this)">Evening</button>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Assigned To</label><div class="profile-chips" id="rt-who"></div></div>
+    <div class="sheet-btns">
+      <button class="sheet-cancel" onclick="closeSheet('sheet-routine')">Cancel</button>
+      <button class="sheet-del" id="rt-del" onclick="deleteRoutine()" style="display:none">Delete</button>
+      <button class="sheet-save" onclick="saveRoutine()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- REWARD SHEET -->
+<div class="sheet-overlay" id="sheet-reward" onclick="sheetOverlayClick(event,'sheet-reward')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Add Reward</div>
+    <div class="form-group"><label class="form-label">Reward</label><input class="form-input" id="rw-name" placeholder="e.g. Movie Night, Ice Cream"/></div>
+    <div class="form-group"><label class="form-label">Stars Required</label><input class="form-input" id="rw-stars" type="number" value="10" min="1"/></div>
+    <div class="form-group"><label class="form-label">For</label><div class="profile-chips" id="rw-who"></div></div>
+    <div class="sheet-btns">
+      <button class="sheet-cancel" onclick="closeSheet('sheet-reward')">Cancel</button>
+      <button class="sheet-save" onclick="saveReward()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- RECIPE DETAIL SHEET -->
+<div class="sheet-overlay" id="sheet-recipe" onclick="sheetOverlayClick(event,'sheet-recipe')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px;">
+      <div style="flex:1;">
+        <div style="font-size:10px;font-weight:700;color:var(--text-light);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px;" id="recipe-detail-cat"></div>
+        <div style="font-family:Nunito,sans-serif;font-size:22px;font-weight:900;color:var(--text);" id="recipe-detail-name"></div>
+      </div>
+      <button onclick="addRecipeToMealFromSheet()" style="flex-shrink:0;background:var(--text);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:800;cursor:pointer;margin-top:4px;">+ Add to Meal</button>
+    </div>
+    <div style="border-top:1px solid var(--border);margin:14px 0;"></div>
+    <div style="font-size:11px;font-weight:700;color:var(--text-light);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;">Recipe</div>
+    <div id="recipe-detail-notes" style="font-size:14px;color:var(--text);line-height:1.75;font-weight:500;white-space:pre-wrap;"></div>
+    <div style="border-top:1px solid var(--border);margin:16px 0;"></div>
+    <div style="display:flex;gap:8px;">
+      <button class="sheet-cancel" onclick="closeSheet('sheet-recipe')" style="flex:1;">Close</button>
+      <button onclick="deleteRecipeFromSheet()" style="background:#FEE2E2;color:#DC2626;border:none;border-radius:12px;padding:14px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- BACKUP SHEET -->
+<div class="sheet-overlay" id="sheet-backup" onclick="sheetOverlayClick(event,'sheet-backup')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">Backup & Restore</div>
+    <div style="background:#F0FDF4;border:1.5px solid #5B9E72;border-radius:12px;padding:12px 14px;margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:700;color:#166534;margin-bottom:3px;">Firebase Connected</div>
+      <div style="font-size:12px;color:#166534;line-height:1.5;">Your data syncs in real-time across all devices automatically.</div>
+    </div>
+    <div style="background:#FFF9F0;border:1.5px solid #F5B300;border-radius:12px;padding:12px 14px;margin-bottom:16px;">
+      <div style="font-size:12px;font-weight:700;color:#B45309;margin-bottom:3px;">Before updating the app</div>
+      <div style="font-size:12px;color:#92400E;line-height:1.5;">Always export a backup before asking Claude to make changes.</div>
+    </div>
+    <div style="font-size:11px;font-weight:700;color:var(--text-light);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Export</div>
+    <button onclick="exportBackup()" style="width:100%;background:var(--text);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;margin-bottom:16px;">Download Backup JSON</button>
+    <div style="font-size:11px;font-weight:700;color:var(--text-light);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Restore</div>
+    <input type="file" id="restore-file-input" accept=".json" style="display:none;" onchange="handleRestoreFile(event)"/>
+    <button onclick="document.getElementById('restore-file-input').click()" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;color:var(--text-mid);margin-bottom:8px;">Choose Backup File</button>
+    <div id="restore-filename" style="font-size:12px;color:var(--text-light);text-align:center;min-height:18px;"></div>
+    <div id="restore-confirm-area" style="display:none;margin-top:12px;">
+      <div style="background:#FEE2E2;border-radius:10px;padding:12px;margin-bottom:12px;">
+        <div style="font-size:12px;font-weight:700;color:#DC2626;">This will overwrite all data on Firebase. Sure?</div>
+      </div>
+      <button onclick="confirmRestore()" style="width:100%;background:#DC2626;color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:800;cursor:pointer;">Yes, Restore Now</button>
+    </div>
+    <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:16px;">
+      <div style="font-size:11px;font-weight:700;color:var(--text-light);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px;">Recipes</div>
+      <button onclick="mergeDefaultRecipes()" style="width:100%;background:var(--bg);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;cursor:pointer;color:var(--text-mid);margin-bottom:12px;">Merge New Recipes</button>
+    </div>
+    <button class="sheet-cancel" onclick="closeSheet('sheet-backup')" style="width:100%;margin-top:4px;">Close</button>
+  </div>
+</div>
+
+<div class="confetti-wrap" id="confetti-wrap"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// FIREBASE CONFIG
+// ============================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyDMGw92jQ6jm3HnLPDFUGB5exRIzCg8G1A",
+  authDomain: "fam-plan-6ab0a.firebaseapp.com",
+  databaseURL: "https://fam-plan-6ab0a-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "fam-plan-6ab0a",
+  storageBucket: "fam-plan-6ab0a.firebasestorage.app",
+  messagingSenderId: "501732985011",
+  appId: "1:501732985011:web:5311b524862c111a0848c6"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const DB_PATH = 'famplan/data';
+
+// ============================================================
+// PROFILES
+// ============================================================
+const PROFILES = [
+  { id:'angus',  name:'Angus',  color:'#E07B54', emoji:'👨‍🌾' },
+  { id:'julia',  name:'Julia',  color:'#5B9E72', emoji:'👸' },
+  { id:'bailey', name:'Bailey', color:'#E8B84B', emoji:'👦' },
+  { id:'beau',   name:'Beau',   color:'#5B8DD9', emoji:'👶' },
+  { id:'family', name:'Family', color:'#9B7BB5', emoji:'🏡' },
+  { id:'arlo',   name:'Arlo',   color:'#A0785A', emoji:'🐕' },
+  { id:'tilly',  name:'Tilly',  color:'#C47FA0', emoji:'🐱' }
+];
+
+// ============================================================
+// STATE
+// ============================================================
+let S = null;
+let currentUser = null;
+let currentTab = 'calendar';
+let calView = 'month';
+let viewDate = new Date();
+let dbRef = null;
+let isWriting = false;
+let editEventId = null;
+let editTaskId = null;
+let editMealId = null;
+let editMealIsRecipe = false;
+let editRoutineId = null;
+let selMealTypeVal = 'dinner';
+let selListIconVal = '🛒';
+let selRtPeriodVal = 'morning';
+let recipeFilter = 'All';
+let _currentRecipeId = null;
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const DAYS_S = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function uid() { return '_' + Math.random().toString(36).slice(2, 9); }
+function fmtDate(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+function isToday(y, m, d) { const t = new Date(); return t.getFullYear()===y && t.getMonth()===m && t.getDate()===d; }
+function pid(id) { return PROFILES.find(p => p.id === id) || PROFILES[4]; }
+
+// ============================================================
+// DEFAULT DATA (50 recipes included)
+// ============================================================
+function defaultData() {
+  const today = new Date();
+  const fmt = d => { const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dy=String(d.getDate()).padStart(2,'0'); return y+'-'+m+'-'+dy; };
+  const d0 = fmt(today);
+  const d1 = fmt(new Date(today.getTime()+86400000));
+  const d2 = fmt(new Date(today.getTime()+2*86400000));
+  return {
+    events: [
+      {id:'e1',name:'School run',date:d0,time:'08:30',endTime:'',person:'julia',persons:['julia'],repeat:'daily',notes:''},
+      {id:'e2',name:'Irrigation check F10',date:d0,time:'07:00',endTime:'',person:'angus',persons:['angus'],repeat:'none',notes:''},
+      {id:'e3',name:'Bailey activity',date:d1,time:'15:30',endTime:'',person:'bailey',persons:['bailey'],repeat:'weekly',notes:''},
+      {id:'e4',name:'Warren market',date:d2,time:'09:00',endTime:'',person:'family',persons:['family'],repeat:'none',notes:''},
+    ],
+    tasks: [
+      {id:'t1',name:'Feed the chooks',person:'bailey',time:'',endTime:'',repeat:'daily',stars:2,done:false},
+      {id:'t2',name:'Empty dishwasher',person:'julia',time:'',endTime:'',repeat:'daily',stars:1,done:false},
+      {id:'t3',name:'Water the garden',person:'angus',time:'',endTime:'',repeat:'daily',stars:2,done:false},
+      {id:'t4',name:'Tidy bedroom',person:'bailey',time:'',endTime:'',repeat:'daily',stars:3,done:false},
+      {id:'t5',name:'Feed Arlo',person:'angus',time:'',endTime:'',repeat:'daily',stars:1,done:false},
+      {id:'t6',name:'Feed Tilly',person:'julia',time:'',endTime:'',repeat:'daily',stars:1,done:false},
+    ],
+    meals: [
+      {id:'m1',date:d0,type:'dinner',name:'Lamb chops and veg',notes:''},
+      {id:'m2',date:d1,type:'dinner',name:'Spaghetti Bolognese',notes:''},
+    ],
+    lists: [
+      {id:'l1',name:'Grocery List',icon:'🛒',items:[
+        {id:'li1',text:'Milk',done:false},{id:'li2',text:'Bread',done:false},{id:'li3',text:'Lamb chops',done:false}
+      ]},
+      {id:'l2',name:'Farm Supplies',icon:'🌿',items:[
+        {id:'li4',text:'Herbicide Roundup 20L',done:false},{id:'li5',text:'Siphon caps',done:false}
+      ]},
+    ],
+    routines: [
+      {id:'ro1',name:'Get dressed',period:'morning',person:'bailey',done:false},
+      {id:'ro2',name:'Brush teeth',period:'morning',person:'bailey',done:false},
+      {id:'ro3',name:'Eat breakfast',period:'morning',person:'beau',done:false},
+      {id:'ro4',name:'Pack school bag',period:'morning',person:'bailey',done:false},
+      {id:'ro5',name:'Check stock water',period:'afternoon',person:'angus',done:false},
+      {id:'ro6',name:'Bath time',period:'evening',person:'beau',done:false},
+      {id:'ro7',name:'Read bedtime story',period:'evening',person:'family',done:false},
+      {id:'ro8',name:'Lights out',period:'evening',person:'bailey',done:false},
+    ],
+    rewards: [
+      {id:'rw1',name:'Movie Night',stars:20,person:'bailey'},
+      {id:'rw2',name:'Ice Cream Trip',stars:15,person:'beau'},
+    ],
+    starBalances: {angus:0,julia:0,bailey:7,beau:4,family:0,arlo:0,tilly:0},
+    _lastUpdated: Date.now()
+  };
+}
+
+// ============================================================
+// FIREBASE SYNC - REAL TIME
+// ============================================================
+function setSyncUI(status, label) {
+  ['sync-dot-picker','sync-dot-app'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.className = 'sync-dot ' + status;
+  });
+  const la = document.getElementById('sync-label-app');
+  if (la) la.textContent = label;
+  const lp = document.getElementById('sync-label-picker');
+  if (lp) lp.textContent = label;
+}
+
+async function initFirebase() {
+  setSyncUI('syncing', 'Connecting...');
+  document.getElementById('loading-sub').textContent = 'Connecting to Firebase...';
+  try {
+    // Check connectivity with a read
+    const snap = await db.ref(DB_PATH).once('value');
+    let data = snap.val();
+    if (!data) {
+      // First time - write defaults
+      data = defaultData();
+      // Inject 50 recipes
+      data.recipes = getDefaultRecipes();
+      await db.ref(DB_PATH).set(data);
+    } else {
+      // Merge in any missing recipes
+      if (!data.recipes || data.recipes.length < 10) {
+        data.recipes = getDefaultRecipes();
+        await db.ref(DB_PATH).update({recipes: data.recipes});
+      }
+    }
+    S = data;
+    setSyncUI('ok', 'Live');
+    // Set up real-time listener
+    db.ref(DB_PATH).on('value', snap => {
+      if (isWriting) return;
+      const remote = snap.val();
+      if (remote && remote._lastUpdated && S && remote._lastUpdated > (S._lastUpdated || 0)) {
+        S = remote;
+        if (currentTab) render();
+        showToast('Updated from family');
+      } else if (remote) {
+        S = remote;
+      }
+    });
+  } catch(e) {
+    console.error('Firebase error:', e);
+    setSyncUI('err', 'Offline');
+    // Fall back to localStorage
+    try {
+      const local = localStorage.getItem('famplan_local');
+      S = local ? JSON.parse(local) : defaultData();
+      S.recipes = S.recipes && S.recipes.length > 10 ? S.recipes : getDefaultRecipes();
+    } catch(e2) {
+      S = defaultData();
+      S.recipes = getDefaultRecipes();
+    }
+  }
+  hideLoading();
+  buildPicker();
+}
+
+async function saveToFirebase() {
+  if (!S) return;
+  S._lastUpdated = Date.now();
+  // Always save to localStorage as backup
+  try { localStorage.setItem('famplan_local', JSON.stringify(S)); } catch(e) {}
+  // Save to Firebase
+  try {
+    isWriting = true;
+    await db.ref(DB_PATH).set(S);
+    isWriting = false;
+    setSyncUI('ok', 'Saved');
+  } catch(e) {
+    isWriting = false;
+    setSyncUI('err', 'Offline - saved locally');
+  }
+}
+
+function hideLoading() {
+  const lo = document.getElementById('loading-overlay');
+  lo.classList.add('hidden');
+  setTimeout(() => lo.style.display = 'none', 500);
+}
+
+// ============================================================
+// PICKER
+// ============================================================
+function buildPicker() {
+  const people = PROFILES.filter(p => ['angus','julia'].includes(p.id));
+  const grid = document.getElementById('picker-grid');
+  grid.innerHTML = people.map(p => `
+    <div class="picker-btn" data-pid="${p.id}" onclick="selectProfile('${p.id}')">
+      <div class="pb-emoji">${p.emoji}</div>
+      <div class="pb-name">${p.name}</div>
+      <div class="pb-sub">⭐ ${(S && S.starBalances && S.starBalances[p.id]) || 0} stars</div>
+    </div>
+  `).join('');
+}
+
+let selectedProfileId = null;
+function selectProfile(id) {
+  selectedProfileId = id;
+  document.querySelectorAll('.picker-btn').forEach(b => {
+    b.classList.remove('sel'); b.style.background=''; b.style.borderColor='';
+  });
+  const btn = document.querySelector('[data-pid="' + id + '"]');
+  if (btn) {
+    const p = pid(id);
+    btn.style.borderColor = p.color;
+    btn.style.background = p.color + '18';
+  }
+  document.getElementById('enter-btn').disabled = false;
+}
+
+function enterApp() {
+  if (!selectedProfileId) return;
+  currentUser = pid(selectedProfileId);
+  const avatar = document.getElementById('ah-avatar');
+  avatar.textContent = currentUser.emoji;
+  avatar.style.background = currentUser.color + '25';
+  document.getElementById('ah-sub').textContent = 'Hi ' + currentUser.name;
+  document.getElementById('screen-picker').classList.remove('active');
+  document.getElementById('screen-app').classList.add('active');
+  setTab('calendar');
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function setTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.bn-btn').forEach(b => b.classList.remove('active'));
+  const navId = (tab === 'routines' || tab === 'rewards') ? 'more' : tab;
+  const navEl = document.getElementById('nav-' + navId);
+  if (navEl) navEl.classList.add('active');
+  document.getElementById('fab').style.display = tab === 'more' ? 'none' : 'flex';
+  render();
+}
+
+function render() {
+  if (!S) return;
+  if (currentTab === 'calendar') renderCalendar();
+  else if (currentTab === 'tasks') renderTasks();
+  else if (currentTab === 'meals') renderMeals();
+  else if (currentTab === 'lists') renderLists();
+  else if (currentTab === 'more') renderMore();
+}
+
+function openAdd() {
+  if (currentTab === 'calendar') openEventSheet(null, fmtDate(viewDate));
+  else if (currentTab === 'tasks') openTaskSheet(null);
+  else if (currentTab === 'meals') openMealSheet(null, fmtDate(new Date()), 'dinner');
+  else if (currentTab === 'lists') openListSheet();
+}
+
+// ============================================================
+// CALENDAR
+// ============================================================
+function getEventsForDate(ds) {
+  const [_y,_m,_d] = ds.split('-').map(Number);
+  const dt = new Date(_y, _m-1, _d);
+  return (S.events || []).filter(e => {
+    if (e.date === ds) return true;
+    if (e.repeat === 'daily') { const [ey,em,ed]=e.date.split('-').map(Number); return new Date(ey,em-1,ed)<=dt; }
+    if (e.repeat === 'weekly') { const [wy,wm,wd2]=e.date.split('-').map(Number); const ed=new Date(wy,wm-1,wd2); return ed<=dt&&((dt-ed)/86400000)%7===0; }
+    if (e.repeat === 'monthly') { const [my,mm,md]=e.date.split('-').map(Number); const ed=new Date(my,mm-1,md); return ed<=dt&&ed.getDate()===dt.getDate(); }
+    return false;
+  }).sort((a,b) => (a.time||'99:99').localeCompare(b.time||'99:99'));
+}
+
+function renderCalendar() {
+  updateCalNav();
+  let html = '';
+  html += '<div class="cal-nav"><button class="cal-nav-btn" onclick="shiftCal(-1)">&#8249;</button>';
+  html += '<div class="cal-nav-label" id="cal-nav-label"></div>';
+  html += '<button class="cal-nav-btn" onclick="shiftCal(1)">&#8250;</button></div>';
+  html += '<div class="cal-view-tabs">';
+  ['month','week','day','schedule'].forEach(v => {
+    html += '<button class="cvt-btn ' + (calView===v?'active':'') + '" onclick="setCalView(\'' + v + '\')">' + v.charAt(0).toUpperCase()+v.slice(1) + '</button>';
+  });
+  html += '</div>';
+  if (calView === 'month') html += renderMonth();
+  else if (calView === 'week') html += renderWeek();
+  else if (calView === 'day') html += renderDay();
+  else html += renderSchedule();
+  document.getElementById('app-content').innerHTML = html;
+  updateCalNav();
+}
+
+function updateCalNav() {
+  const el = document.getElementById('cal-nav-label'); if (!el) return;
+  if (calView === 'month') el.textContent = MONTHS[viewDate.getMonth()] + ' ' + viewDate.getFullYear();
+  else if (calView === 'week') {
+    const wd = new Date(viewDate); wd.setDate(wd.getDate()-wd.getDay());
+    const we = new Date(wd); we.setDate(we.getDate()+6);
+    el.textContent = wd.getDate() + ' ' + MONTHS[wd.getMonth()].slice(0,3) + ' - ' + we.getDate() + ' ' + MONTHS[we.getMonth()].slice(0,3);
+  } else {
+    el.textContent = DAYS[viewDate.getDay()].slice(0,3) + ' ' + viewDate.getDate() + ' ' + MONTHS[viewDate.getMonth()].slice(0,3);
+  }
+}
+
+function setCalView(v) { calView = v; renderCalendar(); }
+function shiftCal(dir) {
+  if (calView === 'month') viewDate.setMonth(viewDate.getMonth() + dir);
+  else if (calView === 'week') viewDate.setDate(viewDate.getDate() + dir*7);
+  else viewDate.setDate(viewDate.getDate() + dir);
+  renderCalendar();
+}
+
+function renderMonth() {
+  const yr = viewDate.getFullYear(), mo = viewDate.getMonth();
+  const first = new Date(yr,mo,1).getDay();
+  const days = new Date(yr,mo+1,0).getDate();
+  let html = '<div class="month-dow">';
+  DAYS_S.forEach(d => html += '<div class="dow-lbl">' + d.slice(0,1) + '</div>');
+  html += '</div><div class="month-grid">';
+  const prev = new Date(yr,mo,0).getDate();
+  for(let i=first-1;i>=0;i--) html += '<div class="mc other"><div class="cn">' + (prev-i) + '</div></div>';
+  for(let d=1;d<=days;d++) {
+    const ds = yr + '-' + String(mo+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    const evs = getEventsForDate(ds);
+    const tod = isToday(yr,mo,d);
+    html += '<div class="mc' + (tod?' today':'') + '" onclick="tapDay(\'' + ds + '\')">';
+    html += '<div class="cn">' + d + '</div>';
+    html += '<div class="mc-dots">' + evs.slice(0,4).map(e => '<div class="mc-dot" style="background:' + pid(e.person).color + '"></div>').join('') + '</div></div>';
+  }
+  const rem = (7-(first+days)%7)%7;
+  for(let d=1;d<=rem;d++) html += '<div class="mc other"><div class="cn">' + d + '</div></div>';
+  html += '</div>';
+  // Today preview
+  const todayEvs = getEventsForDate(fmtDate(new Date()));
+  if (todayEvs.length) {
+    html += '<div style="padding:14px 16px 0;"><div style="font-family:Nunito,sans-serif;font-size:14px;font-weight:800;margin-bottom:8px;">Today</div>';
+    todayEvs.forEach(e => {
+      const p = pid(e.person);
+      html += '<div class="agenda-ev" onclick="openEventSheet(\'' + e.id + '\')">';
+      html += '<div class="agenda-ev-dot" style="background:' + p.color + '"></div>';
+      html += '<div class="agenda-ev-name">' + e.name + '</div>';
+      html += '<div style="font-size:11px;color:var(--text-light);">' + (e.time||(e.endTime?e.time+'-'+e.endTime:'')) + ' ' + p.emoji + '</div></div>';
+    });
+    html += '</div>';
+  }
+  return html;
+}
+
+function tapDay(ds) {
+  const [td_y,td_m,td_d] = ds.split('-').map(Number);
+  viewDate = new Date(td_y, td_m-1, td_d);
+  setCalView('day');
+}
+
+function renderWeek() {
+  const wd = new Date(viewDate); wd.setDate(wd.getDate()-wd.getDay());
+  const days = [];
+  for(let i=0;i<7;i++){const d=new Date(wd);d.setDate(d.getDate()+i);days.push(d);}
+  let html = '<div class="week-grid"><div></div>';
+  days.forEach(d => {
+    const tod = isToday(d.getFullYear(),d.getMonth(),d.getDate());
+    html += '<div class="week-col-hdr"><div class="week-col-day">' + DAYS_S[d.getDay()].slice(0,1) + '</div>';
+    html += '<div class="' + (tod?'week-col-num today-num':'week-col-num') + '">' + d.getDate() + '</div></div>';
+  });
+  html += '<div class="week-time-col">';
+  for(let h=6;h<22;h++) html += '<div class="week-time-lbl">' + (h<12?h+'am':h===12?'12pm':(h-12)+'pm') + '</div>';
+  html += '</div>';
+  days.forEach(d => {
+    const ds = fmtDate(d);
+    const tod = isToday(d.getFullYear(),d.getMonth(),d.getDate());
+    const evs = getEventsForDate(ds).filter(e=>e.time);
+    html += '<div class="week-day-col' + (tod?' today-col':'') + '" onclick="openEventSheet(null,\'' + ds + '\')">';
+    evs.forEach(e => {
+      const p = pid(e.person);
+      const hr = parseInt(e.time.split(':')[0]);
+      const min = parseInt(e.time.split(':')[1]||0);
+      const topPx = Math.max(0,(hr-6))*48+Math.round(min*0.8);
+      const endHr = e.endTime?parseInt(e.endTime.split(':')[0]):hr+1;
+      const endMin = e.endTime?parseInt(e.endTime.split(':')[1]||0):0;
+      const heightPx = Math.max(20,(endHr-hr)*48+Math.round((endMin-min)*0.8));
+      html += '<div class="week-ev" style="background:' + p.color + ';top:' + topPx + 'px;height:' + heightPx + 'px;" onclick="event.stopPropagation();openEventSheet(\'' + e.id + '\')">' + e.name + '</div>';
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderDay() {
+  const ds = fmtDate(viewDate);
+  const evs = getEventsForDate(ds);
+  let html = '<div class="day-scroll"><div class="day-hdr"><h2>' + DAYS[viewDate.getDay()] + ', ' + viewDate.getDate() + ' ' + MONTHS[viewDate.getMonth()] + '</h2>';
+  html += '<p>' + evs.length + ' event' + (evs.length===1?'':'s') + '</p></div>';
+  if (!evs.length) html += '<div class="day-empty">No events - tap + to add one</div>';
+  evs.forEach(e => {
+    const p = pid(e.person);
+    const timeStr = e.time ? (e.endTime ? e.time+' - '+e.endTime : e.time) : '';
+    html += '<div class="day-ev-card" onclick="openEventSheet(\'' + e.id + '\')">';
+    html += '<div class="day-ev-bar" style="background:' + p.color + '"></div>';
+    html += '<div style="flex:1;"><div class="day-ev-name">' + e.name + '</div>';
+    html += '<div class="day-ev-meta">' + (timeStr?'&#9200; '+timeStr+' &middot; ':'') + p.emoji + ' ' + p.name + (e.notes?' &middot; '+e.notes:'') + '</div></div></div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderSchedule() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  let html = '<div style="padding-top:6px;">';
+  for(let i=0;i<10;i++) {
+    const d = new Date(today); d.setDate(d.getDate()+i);
+    const ds = fmtDate(d);
+    const evs = getEventsForDate(ds);
+    html += '<div class="agenda-day"><div class="agenda-day-hdr">';
+    html += '<div class="agenda-circle' + (i===0?' today':'') + '">' + d.getDate() + '</div>';
+    html += '<div><div class="agenda-label">' + DAYS[d.getDay()] + '</div>';
+    html += '<div class="agenda-sub">' + MONTHS[d.getMonth()] + ' ' + d.getDate() + '</div></div></div>';
+    if (!evs.length) html += '<div style="padding:4px 16px 4px 62px;font-size:12px;color:var(--text-light);">No events</div>';
+    evs.forEach(e => {
+      const p = pid(e.person);
+      html += '<div class="agenda-ev" onclick="openEventSheet(\'' + e.id + '\')">';
+      html += '<div class="agenda-ev-dot" style="background:' + p.color + '"></div>';
+      html += '<div class="agenda-ev-name">' + e.name + '</div>';
+      html += '<div style="font-size:11px;color:var(--text-light);">' + (e.time||'') + ' ' + p.emoji + '</div></div>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+  return html;
+}
+
+// ============================================================
+// TASKS
+// ============================================================
+function renderTasks() {
+  const people = PROFILES.filter(p => !['family','arlo','tilly'].includes(p.id));
+  const sb = S.starBalances || {};
+  let html = '<div class="tasks-pad"><div class="stars-bar">';
+  people.forEach(p => {
+    html += '<div class="star-chip"><div class="star-chip-name">' + p.emoji + ' ' + p.name + '</div>';
+    html += '<div class="star-chip-val">&#11088; ' + (sb[p.id]||0) + '</div></div>';
+  });
+  html += '</div>';
+  PROFILES.forEach(p => {
+    const tasks = (S.tasks||[]).filter(t=>t.person===p.id);
+    if (!tasks.length && ['family','arlo','tilly'].includes(p.id)) return;
+    if (!tasks.length && p.id !== 'family') { /* show add button anyway for people */}
+    const showSection = tasks.length > 0 || ['angus','julia','bailey','beau'].includes(p.id);
+    if (!showSection) return;
+    html += '<div class="person-section"><div class="person-section-hdr">';
+    html += '<div class="person-section-name"><div class="person-dot" style="background:' + p.color + '"></div>' + p.emoji + ' ' + p.name + '</div>';
+    html += '<button onclick="openTaskSheet(null,\'' + p.id + '\')" style="background:none;border:1.5px solid var(--border);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--text-mid);">+ Add</button></div>';
+    tasks.forEach(t => {
+      html += '<div class="task-row" onclick="toggleTask(\'' + t.id + '\')">';
+      html += '<div class="task-cb' + (t.done?' done':'') + '" style="' + (t.done?'background:'+p.color+';':'') + '">' + (t.done?'<span style="color:#fff;font-size:14px;font-weight:900;">&#10003;</span>':'') + '</div>';
+      html += '<div class="task-name' + (t.done?' done':'') + '">' + t.name + '</div>';
+      html += '<div class="task-stars-val">' + '&#11088;'.repeat(t.stars) + '</div>';
+      html += '<button onclick="event.stopPropagation();openTaskSheet(\'' + t.id + '\')" style="background:none;border:none;cursor:pointer;font-size:15px;padding:4px;">&#9999;&#65039;</button></div>';
+    });
+    html += '<div class="quick-add-row"><input class="quick-inp" id="qi-' + p.id + '" placeholder="Quick add..." onkeydown="if(event.key===\'Enter\')quickTask(\'' + p.id + '\')"/>';
+    html += '<button class="quick-add-btn" onclick="quickTask(\'' + p.id + '\')">+</button></div></div>';
+  });
+  html += '</div>';
+  document.getElementById('app-content').innerHTML = html;
+}
+
+function toggleTask(id) {
+  const t = (S.tasks||[]).find(x=>x.id===id); if(!t) return;
+  t.done = !t.done;
+  if (t.done) {
+    S.starBalances[t.person] = (S.starBalances[t.person]||0) + t.stars;
+    const personTasks = (S.tasks||[]).filter(x=>x.person===t.person);
+    if (personTasks.every(x=>x.done)) celebrate();
+  } else {
+    S.starBalances[t.person] = Math.max(0,(S.starBalances[t.person]||0)-t.stars);
+  }
+  saveToFirebase(); renderTasks();
+}
+
+function quickTask(pid_id) {
+  const inp = document.getElementById('qi-'+pid_id); if(!inp||!inp.value.trim()) return;
+  if (!S.tasks) S.tasks = [];
+  S.tasks.push({id:uid(),name:inp.value.trim(),person:pid_id,time:'',endTime:'',repeat:'daily',stars:2,done:false});
+  inp.value = ''; saveToFirebase(); renderTasks();
+}
+
+// ============================================================
+// MEALS
+// ============================================================
+function renderMeals() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  let html = '<div class="meals-pad"><div class="meal-week-scroll">';
+  for(let i=0;i<7;i++) {
+    const d = new Date(today); d.setDate(d.getDate()+i);
+    const ds = fmtDate(d);
+    const dm = (S.meals||[]).filter(m=>m.date===ds);
+    const bf=dm.find(m=>m.type==='breakfast'), lu=dm.find(m=>m.type==='lunch'), di=dm.find(m=>m.type==='dinner');
+    html += '<div class="meal-day-pill' + (i===0?' today':'') + '" onclick="showMealDay(\'' + ds + '\')">';
+    html += '<div class="mdp-name">' + DAYS_S[d.getDay()] + '</div>';
+    html += '<div class="mdp-date">' + d.getDate() + '</div>';
+    html += bf?'<div class="meal-slot-sm breakfast">'+bf.name.slice(0,10)+'</div>':'<div class="meal-slot-empty-sm">+ Bfast</div>';
+    html += lu?'<div class="meal-slot-sm lunch">'+lu.name.slice(0,10)+'</div>':'<div class="meal-slot-empty-sm">+ Lunch</div>';
+    html += di?'<div class="meal-slot-sm dinner">'+di.name.slice(0,10)+'</div>':'<div class="meal-slot-empty-sm">+ Dinner</div>';
+    html += '</div>';
+  }
+  html += '</div>';
+  html += renderMealDayDetail(fmtDate(today));
+  html += renderRecipeBox();
+  html += '</div>';
+  document.getElementById('app-content').innerHTML = html;
+}
+
+function renderMealDayDetail(ds) {
+  const [dy,dm2,dd2] = ds.split('-').map(Number);
+  const d = new Date(dy,dm2-1,dd2);
+  const dm = (S.meals||[]).filter(m=>m.date===ds);
+  const bf=dm.find(m=>m.type==='breakfast'), lu=dm.find(m=>m.type==='lunch'), di=dm.find(m=>m.type==='dinner');
+  const isT = fmtDate(new Date())===ds;
+  let html = '<div class="meal-detail-card"><div class="meal-detail-date">' + (isT?'Today - ':'') + DAYS[d.getDay()] + ' ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + '</div>';
+  [['breakfast','Breakfast',bf],['lunch','Lunch',lu],['dinner','Dinner',di]].forEach(([type,label,meal]) => {
+    html += '<div class="meal-type-row" onclick="' + (meal?'openMealSheet(\''+meal.id+'\')':'openMealSheet(null,\''+ds+'\',\''+type+'\')') + '">';
+    html += '<div class="meal-type-badge ' + type + '">' + label + '</div>';
+    html += meal?'<div class="meal-type-name">'+meal.name+'</div><div style="font-size:12px;color:var(--text-light);">&#9998;</div>':'<div class="meal-add-link">Tap to plan</div>';
+    html += '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function renderRecipeBox() {
+  const filtered = recipeFilter==='All' ? (S.recipes||[]) : (S.recipes||[]).filter(r=>r.category===recipeFilter);
+  let html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;margin-top:4px;">';
+  html += '<div style="font-family:Nunito,sans-serif;font-size:15px;font-weight:800;">Recipe Box</div></div>';
+  html += '<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px;scrollbar-width:none;">';
+  ['All','Breakfast','Lunch','Dinner'].forEach(cat => {
+    html += '<button onclick="setRecipeFilter(\'' + cat + '\')" style="flex-shrink:0;padding:5px 13px;border-radius:20px;border:1.5px solid ' + (recipeFilter===cat?'var(--text)':'var(--border)') + ';background:' + (recipeFilter===cat?'var(--text)':'var(--white)') + ';color:' + (recipeFilter===cat?'#fff':'var(--text-mid)') + ';font-family:Nunito Sans,sans-serif;font-size:12px;font-weight:700;cursor:pointer;">' + cat + '</button>';
+  });
+  html += '</div><div>';
+  filtered.forEach(r => {
+    html += '<div class="recipe-row" onclick="openRecipeDetail(\'' + r.id + '\')">';
+    html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">';
+    html += '<div style="flex:1;"><div class="recipe-cat">' + r.category + '</div><div class="recipe-name">' + r.name + '</div>';
+    if (r.notes) html += '<div style="font-size:11px;color:var(--text-light);margin-top:3px;">' + r.notes.slice(0,60) + (r.notes.length>60?'...':'') + '</div>';
+    html += '</div><div style="font-size:16px;color:var(--text-light);">&#8250;</div></div></div>';
+  });
+  html += '<button onclick="openMealSheet(null,null,null,true)" style="background:var(--bg);border:1.5px dashed var(--border);border-radius:12px;padding:12px;width:100%;font-family:Nunito Sans,sans-serif;font-size:13px;font-weight:700;color:var(--text-light);cursor:pointer;margin-top:6px;">+ Add Recipe</button></div>';
+  return html;
+}
+
+function showMealDay(ds) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const filtered = recipeFilter==='All' ? (S.recipes||[]) : (S.recipes||[]).filter(r=>r.category===recipeFilter);
+  let html = '<div class="meals-pad"><div class="meal-week-scroll">';
+  for(let i=0;i<7;i++) {
+    const d = new Date(today); d.setDate(d.getDate()+i);
+    const dds = fmtDate(d);
+    const dm = (S.meals||[]).filter(m=>m.date===dds);
+    const bf=dm.find(m=>m.type==='breakfast'), lu=dm.find(m=>m.type==='lunch'), di=dm.find(m=>m.type==='dinner');
+    const isSel = dds===ds;
+    html += '<div class="meal-day-pill' + (fmtDate(today)===dds?' today':'') + '" style="' + (isSel?'border-color:var(--text);box-shadow:var(--shadow-lg);':'') + '" onclick="showMealDay(\'' + dds + '\')">';
+    html += '<div class="mdp-name">' + DAYS_S[d.getDay()] + '</div><div class="mdp-date">' + d.getDate() + '</div>';
+    html += bf?'<div class="meal-slot-sm breakfast">'+bf.name.slice(0,10)+'</div>':'<div class="meal-slot-empty-sm">+ Bfast</div>';
+    html += lu?'<div class="meal-slot-sm lunch">'+lu.name.slice(0,10)+'</div>':'<div class="meal-slot-empty-sm">+ Lunch</div>';
+    html += di?'<div class="meal-slot-sm dinner">'+di.name.slice(0,10)+'</div>':'<div class="meal-slot-empty-sm">+ Dinner</div>';
+    html += '</div>';
+  }
+  html += '</div>' + renderMealDayDetail(ds);
+  html += renderRecipeBox();
+  html += '</div>';
+  document.getElementById('app-content').innerHTML = html;
+}
+
+function setRecipeFilter(cat) { recipeFilter = cat; renderMeals(); }
+
+// ============================================================
+// LISTS
+// ============================================================
+function renderLists() {
+  let html = '<div class="lists-pad">';
+  (S.lists||[]).forEach(lst => {
+    const allDone = lst.items.length > 0 && lst.items.every(i=>i.done);
+    html += '<div class="list-card-m"><div class="list-card-hdr">';
+    html += '<div class="list-card-title-m"><span>' + lst.icon + '</span>' + lst.name + '</div>';
+    html += '<div style="display:flex;gap:6px;align-items:center;">';
+    if (allDone) html += '<button onclick="clearDoneItems(\'' + lst.id + '\')" style="background:#E8F5E9;color:#2E7D32;border:none;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;">Clear all</button>';
+    html += '<button onclick="deleteList(\'' + lst.id + '\')" style="background:none;border:none;cursor:pointer;font-size:15px;color:var(--text-light);">&#128465;&#65039;</button>';
+    html += '</div></div>';
+    lst.items.forEach(item => {
+      html += '<div class="list-item-m" onclick="toggleListItem(\'' + lst.id + '\',\'' + item.id + '\')">';
+      html += '<div class="list-cb' + (item.done?' done':'') + '" style="' + (item.done?'background:var(--julia);':'') + '">' + (item.done?'<span style="color:#fff;font-size:11px;font-weight:900;">&#10003;</span>':'') + '</div>';
+      html += '<div class="list-item-text-m' + (item.done?' done':'') + '">' + item.text + '</div>';
+      html += '<button onclick="event.stopPropagation();deleteListItem(\'' + lst.id + '\',\'' + item.id + '\')" style="background:none;border:none;cursor:pointer;font-size:13px;color:var(--text-light);padding:4px;">&#10005;</button></div>';
+    });
+    html += '<div class="quick-add-row"><input class="quick-inp" id="qli-' + lst.id + '" placeholder="Add item..." onkeydown="if(event.key===\'Enter\')quickListItem(\'' + lst.id + '\')"/>';
+    html += '<button class="quick-add-btn" onclick="quickListItem(\'' + lst.id + '\')">+</button></div></div>';
+  });
+  html += '<button onclick="openListSheet()" style="background:var(--bg);border:2px dashed var(--border);border-radius:var(--radius);padding:18px;width:100%;font-family:Nunito,sans-serif;font-size:14px;font-weight:800;color:var(--text-light);cursor:pointer;">+ New List</button></div>';
+  document.getElementById('app-content').innerHTML = html;
+}
+
+function clearDoneItems(lid) { const l=(S.lists||[]).find(x=>x.id===lid);if(!l)return;l.items=l.items.filter(i=>!i.done);saveToFirebase();renderLists(); }
+function toggleListItem(lid,iid) { const l=(S.lists||[]).find(x=>x.id===lid);if(!l)return;const i=l.items.find(x=>x.id===iid);if(!i)return;i.done=!i.done;saveToFirebase();renderLists(); }
+function deleteListItem(lid,iid) { const l=(S.lists||[]).find(x=>x.id===lid);if(!l)return;l.items=l.items.filter(i=>i.id!==iid);saveToFirebase();renderLists(); }
+function deleteList(lid) { S.lists=(S.lists||[]).filter(l=>l.id!==lid);saveToFirebase();renderLists(); }
+function quickListItem(lid) { const inp=document.getElementById('qli-'+lid);if(!inp||!inp.value.trim())return;const l=(S.lists||[]).find(x=>x.id===lid);if(!l)return;l.items.push({id:uid(),text:inp.value.trim(),done:false});inp.value='';saveToFirebase();renderLists(); }
+
+// ============================================================
+// MORE (Routines + Rewards)
+// ============================================================
+function renderMore() {
+  let html = '<div class="routines-pad">';
+  html += '<div style="display:flex;background:var(--bg);border-radius:10px;padding:3px;margin-bottom:16px;border:1px solid var(--border);">';
+  html += '<button id="more-tab-routines" onclick="showMoreTab(\'routines\')" style="flex:1;padding:8px;border-radius:8px;border:none;font-family:Nunito Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;background:var(--white);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.1);">Routines</button>';
+  html += '<button id="more-tab-rewards" onclick="showMoreTab(\'rewards\')" style="flex:1;padding:8px;border-radius:8px;border:none;font-family:Nunito Sans,sans-serif;font-size:13px;font-weight:700;cursor:pointer;background:transparent;color:var(--text-light);">Rewards</button>';
+  html += '</div><div id="more-content"></div></div>';
+  document.getElementById('app-content').innerHTML = html;
+  showMoreTab('routines');
+}
+
+let moreTab = 'routines';
+function showMoreTab(tab) {
+  moreTab = tab;
+  const mc = document.getElementById('more-content'); if(!mc) return;
+  document.getElementById('more-tab-routines').style.background = tab==='routines'?'var(--white)':'transparent';
+  document.getElementById('more-tab-routines').style.color = tab==='routines'?'var(--text)':'var(--text-light)';
+  document.getElementById('more-tab-routines').style.boxShadow = tab==='routines'?'0 1px 4px rgba(0,0,0,0.1)':'none';
+  document.getElementById('more-tab-rewards').style.background = tab==='rewards'?'var(--white)':'transparent';
+  document.getElementById('more-tab-rewards').style.color = tab==='rewards'?'var(--text)':'var(--text-light)';
+  document.getElementById('more-tab-rewards').style.boxShadow = tab==='rewards'?'0 1px 4px rgba(0,0,0,0.1)':'none';
+  mc.innerHTML = tab==='routines' ? buildRoutinesHTML() : buildRewardsHTML();
+}
+
+function buildRoutinesHTML() {
+  const periods = [{id:'morning',label:'Morning',icon:'🌅',sub:'Start the day'},{id:'afternoon',label:'Afternoon',icon:'☀️',sub:'Midday'},{id:'evening',label:'Evening',icon:'🌙',sub:'Wind down'}];
+  let html = '';
+  periods.forEach(period => {
+    const steps = (S.routines||[]).filter(r=>r.period===period.id);
+    html += '<div class="routine-period"><div class="routine-period-hdr">';
+    html += '<div class="rp-icon">' + period.icon + '</div>';
+    html += '<div><div class="rp-title">' + period.label + '</div><div class="rp-sub">' + period.sub + '</div></div>';
+    html += '<button onclick="openRoutineSheet(null,\'' + period.id + '\')" style="margin-left:auto;background:none;border:1.5px solid var(--border);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--text-mid);">+ Add</button></div>';
+    steps.forEach(r => {
+      const p = pid(r.person);
+      html += '<div class="routine-row" onclick="toggleRoutine(\'' + r.id + '\')">';
+      html += '<div class="task-cb' + (r.done?' done':'') + '" style="' + (r.done?'background:'+p.color+';':'') + '">' + (r.done?'<span style="color:#fff;font-size:14px;font-weight:900;">&#10003;</span>':'') + '</div>';
+      html += '<div style="flex:1;"><div class="task-name' + (r.done?' done':'') + '">' + r.name + '</div>';
+      html += '<div class="rt-who" style="color:' + p.color + '">' + p.emoji + ' ' + p.name + '</div></div>';
+      html += '<button onclick="event.stopPropagation();openRoutineSheet(\'' + r.id + '\')" style="background:none;border:none;cursor:pointer;font-size:14px;">&#9999;&#65039;</button></div>';
+    });
+    html += '<div class="quick-add-row"><input class="quick-inp" id="qrt-' + period.id + '" placeholder="Add step..." onkeydown="if(event.key===\'Enter\')quickRoutine(\'' + period.id + '\')"/>';
+    html += '<button class="quick-add-btn" onclick="quickRoutine(\'' + period.id + '\')">+</button></div></div>';
+  });
+  return html;
+}
+
+function toggleRoutine(id) { const r=(S.routines||[]).find(x=>x.id===id);if(!r)return;r.done=!r.done;saveToFirebase();showMoreTab('routines'); }
+function quickRoutine(period) { const inp=document.getElementById('qrt-'+period);if(!inp||!inp.value.trim())return;if(!S.routines)S.routines=[];S.routines.push({id:uid(),name:inp.value.trim(),period,person:'family',done:false});inp.value='';saveToFirebase();showMoreTab('routines'); }
+
+function buildRewardsHTML() {
+  const people = PROFILES.filter(p=>!['family','arlo','tilly'].includes(p.id));
+  let html = '<div class="balance-grid">';
+  people.forEach(p => {
+    html += '<div class="balance-card"><div class="bc-emoji">' + p.emoji + '</div>';
+    html += '<div class="bc-name">' + p.name + '</div>';
+    html += '<div class="bc-stars">&#11088; ' + (S.starBalances&&S.starBalances[p.id]||0) + '</div>';
+    html += '<div class="bc-btns"><button class="bc-adj" onclick="adjStars(\'' + p.id + '\',5)">+5</button>';
+    html += '<button class="bc-adj" onclick="adjStars(\'' + p.id + '\',-5)">-5</button></div></div>';
+  });
+  html += '</div>';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">';
+  html += '<div style="font-family:Nunito,sans-serif;font-size:15px;font-weight:800;">Rewards</div>';
+  html += '<button onclick="openRewardSheet()" style="background:var(--text);color:#fff;border:none;border-radius:9px;padding:6px 13px;font-family:Nunito,sans-serif;font-size:12px;font-weight:700;cursor:pointer;">+ Add</button></div>';
+  (S.rewards||[]).forEach(rw => {
+    const p = pid(rw.person);
+    const bal = (S.starBalances&&S.starBalances[rw.person])||0;
+    const pct = Math.min(100,(bal/rw.stars)*100);
+    html += '<div class="reward-card-m"><div class="reward-card-name">' + rw.name + '</div>';
+    html += '<div class="reward-card-meta">' + p.emoji + ' ' + p.name + ' &middot; &#11088; ' + rw.stars + ' needed</div>';
+    html += '<div class="reward-progress"><div class="reward-progress-bar" style="background:' + p.color + ';width:' + pct + '%"></div></div>';
+    html += '<div class="reward-progress-label">' + bal + ' / ' + rw.stars + ' stars</div>';
+    if (bal>=rw.stars) html += '<button class="redeem-btn" onclick="redeemReward(\'' + rw.id + '\')">Redeem!</button>';
+    html += '</div>';
+  });
+  return html;
+}
+
+function adjStars(pid_id, delta) { if(!S.starBalances)S.starBalances={};S.starBalances[pid_id]=Math.max(0,(S.starBalances[pid_id]||0)+delta);saveToFirebase();showMoreTab('rewards'); }
+function redeemReward(rid) { const rw=(S.rewards||[]).find(r=>r.id===rid);if(!rw)return;S.starBalances[rw.person]=Math.max(0,(S.starBalances[rw.person]||0)-rw.stars);celebrate();saveToFirebase();showMoreTab('rewards'); }
+
+// ============================================================
+// SHEET HELPERS
+// ============================================================
+function openSheet(id) { document.getElementById(id).classList.add('open'); }
+function closeSheet(id) { document.getElementById(id).classList.remove('open'); }
+function sheetOverlayClick(e, id) { if(e.target===document.getElementById(id)) closeSheet(id); }
+
+function buildProfileChips(containerId, selectedId) {
+  const c = document.getElementById(containerId); if(!c) return;
+  c.innerHTML = '';
+  PROFILES.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'pc-btn'; btn.dataset.pid = p.id;
+    btn.textContent = p.emoji + ' ' + p.name;
+    if (p.id === selectedId) { btn.classList.add('sel'); btn.style.background=p.color; btn.style.color='#fff'; btn.style.borderColor=p.color; }
+    btn.onclick = () => {
+      c.querySelectorAll('.pc-btn').forEach(b=>{b.classList.remove('sel');b.style.background='';b.style.color='';b.style.borderColor='';});
+      btn.classList.add('sel'); btn.style.background=p.color; btn.style.color='#fff'; btn.style.borderColor=p.color;
+    };
+    c.appendChild(btn);
+  });
+}
+
+function buildProfileChipsMulti(containerId, selectedIds) {
+  const c = document.getElementById(containerId); if(!c) return;
+  c.innerHTML = '';
+  PROFILES.forEach(p => {
+    const btn = document.createElement('button');
+    btn.className = 'pc-btn'; btn.dataset.pid = p.id;
+    btn.textContent = p.emoji + ' ' + p.name;
+    if (selectedIds.includes(p.id)) { btn.classList.add('sel'); btn.style.background=p.color; btn.style.color='#fff'; btn.style.borderColor=p.color; }
+    btn.onclick = () => {
+      if (btn.classList.contains('sel')) { btn.classList.remove('sel'); btn.style.background=''; btn.style.color=''; btn.style.borderColor=''; }
+      else { btn.classList.add('sel'); btn.style.background=p.color; btn.style.color='#fff'; btn.style.borderColor=p.color; }
+    };
+    c.appendChild(btn);
+  });
+}
+
+function getSelChip(containerId) {
+  const c = document.getElementById(containerId); if(!c) return 'family';
+  const sel = c.querySelector('.pc-btn.sel'); return sel ? sel.dataset.pid : 'family';
+}
+function getSelChips(containerId) {
+  const c = document.getElementById(containerId); if(!c) return ['family'];
+  const sels = Array.from(c.querySelectorAll('.pc-btn.sel')).map(b=>b.dataset.pid);
+  return sels.length ? sels : ['family'];
+}
+
+// ============================================================
+// EVENT SHEET
+// ============================================================
+function openEventSheet(id, defaultDate) {
+  editEventId = id;
+  const ev = id ? (S.events||[]).find(e=>e.id===id) : null;
+  document.getElementById('sheet-event-title').textContent = ev ? 'Edit Event' : 'Add Event';
+  document.getElementById('ev-name').value = ev ? ev.name : '';
+  document.getElementById('ev-date').value = ev ? ev.date : (defaultDate||fmtDate(new Date()));
+  document.getElementById('ev-time').value = ev ? ev.time : '';
+  document.getElementById('ev-end-time').value = ev ? (ev.endTime||'') : '';
+  document.getElementById('ev-repeat').value = ev ? ev.repeat : 'none';
+  document.getElementById('ev-notes').value = ev ? ev.notes : '';
+  document.getElementById('ev-del').style.display = ev ? 'block' : 'none';
+  buildProfileChipsMulti('ev-who', ev ? (ev.persons||[ev.person]) : (currentUser?[currentUser.id]:['family']));
+  openSheet('sheet-event');
+  setTimeout(()=>document.getElementById('ev-name').focus(), 100);
+}
+
+function saveEvent() {
+  const name = document.getElementById('ev-name').value.trim(); if(!name) return;
+  const persons = getSelChips('ev-who');
+  const ev = {id:editEventId||uid(),name,date:document.getElementById('ev-date').value,time:document.getElementById('ev-time').value,endTime:document.getElementById('ev-end-time').value||'',person:persons[0]||'family',persons,repeat:document.getElementById('ev-repeat').value,notes:document.getElementById('ev-notes').value};
+  if (!S.events) S.events = [];
+  if(editEventId){const i=S.events.findIndex(e=>e.id===editEventId);if(i>=0)S.events[i]=ev;else S.events.push(ev);}
+  else S.events.push(ev);
+  saveToFirebase(); closeSheet('sheet-event'); renderCalendar();
+}
+
+function deleteEvent() {
+  if(!editEventId) return;
+  S.events = (S.events||[]).filter(e=>e.id!==editEventId);
+  saveToFirebase(); closeSheet('sheet-event'); renderCalendar();
+}
+
+// ============================================================
+// TASK SHEET
+// ============================================================
+function openTaskSheet(id, defaultPerson) {
+  editTaskId = id;
+  const t = id ? (S.tasks||[]).find(x=>x.id===id) : null;
+  document.getElementById('sheet-task-title').textContent = t ? 'Edit Chore' : 'Add Chore';
+  document.getElementById('tk-name').value = t ? t.name : '';
+  document.getElementById('tk-time').value = t ? (t.time||'') : '';
+  document.getElementById('tk-end-time').value = t ? (t.endTime||'') : '';
+  document.getElementById('tk-repeat').value = t ? t.repeat : 'daily';
+  document.getElementById('tk-stars').value = t ? String(t.stars) : '3';
+  document.getElementById('tk-del').style.display = t ? 'block' : 'none';
+  buildProfileChips('tk-who', t ? t.person : (defaultPerson||currentUser?.id||'family'));
+  openSheet('sheet-task');
+  setTimeout(()=>document.getElementById('tk-name').focus(), 100);
+}
+
+function saveTask() {
+  const name = document.getElementById('tk-name').value.trim(); if(!name) return;
+  const task = {id:editTaskId||uid(),name,person:getSelChip('tk-who'),time:document.getElementById('tk-time').value||'',endTime:document.getElementById('tk-end-time').value||'',repeat:document.getElementById('tk-repeat').value,stars:parseInt(document.getElementById('tk-stars').value)||2,done:false};
+  if (!S.tasks) S.tasks = [];
+  if(editTaskId){const i=S.tasks.findIndex(t=>t.id===editTaskId);if(i>=0){task.done=S.tasks[i].done;S.tasks[i]=task;}else S.tasks.push(task);}
+  else S.tasks.push(task);
+  saveToFirebase(); closeSheet('sheet-task'); renderTasks();
+}
+
+function deleteTask() {
+  if(!editTaskId) return;
+  S.tasks=(S.tasks||[]).filter(t=>t.id!==editTaskId);
+  saveToFirebase(); closeSheet('sheet-task'); renderTasks();
+}
+
+// ============================================================
+// MEAL SHEET
+// ============================================================
+function openMealSheet(id, date, type, isRecipe) {
+  editMealId = id; editMealIsRecipe = !!isRecipe;
+  const m = id ? (S.meals||[]).find(x=>x.id===id) : null;
+  document.getElementById('sheet-meal-title').textContent = isRecipe ? 'Add Recipe' : (m ? 'Edit Meal' : 'Plan Meal');
+  document.getElementById('ml-name').value = m ? m.name : '';
+  document.getElementById('ml-date').value = m ? m.date : (date||fmtDate(new Date()));
+  document.getElementById('ml-notes').value = m ? m.notes : '';
+  document.getElementById('ml-save-recipe').checked = !!isRecipe;
+  document.getElementById('ml-date-group').style.display = isRecipe ? 'none' : 'block';
+  document.getElementById('ml-del').style.display = m ? 'block' : 'none';
+  selMealTypeVal = m ? m.type : (type||'dinner');
+  document.querySelectorAll('#meal-type-btns .pc-btn').forEach(b => {
+    b.classList.remove('sel'); b.style.background=''; b.style.color=''; b.style.borderColor='';
+    if(b.dataset.t===selMealTypeVal){
+      b.classList.add('sel');
+      const cols={breakfast:['#FFF3E0','#E65100'],lunch:['#E8F5E9','#2E7D32'],dinner:['#EDE7F6','#4527A0']};
+      b.style.background=cols[selMealTypeVal][0]; b.style.color=cols[selMealTypeVal][1]; b.style.borderColor=cols[selMealTypeVal][1];
+    }
+  });
+  openSheet('sheet-meal');
+  setTimeout(()=>document.getElementById('ml-name').focus(), 100);
+}
+
+function selMealType(btn) {
+  selMealTypeVal=btn.dataset.t;
+  document.querySelectorAll('#meal-type-btns .pc-btn').forEach(b=>{b.classList.remove('sel');b.style.background='';b.style.color='';b.style.borderColor='';});
+  btn.classList.add('sel');
+  const cols={breakfast:['#FFF3E0','#E65100'],lunch:['#E8F5E9','#2E7D32'],dinner:['#EDE7F6','#4527A0']};
+  btn.style.background=cols[selMealTypeVal][0]; btn.style.color=cols[selMealTypeVal][1]; btn.style.borderColor=cols[selMealTypeVal][1];
+}
+
+function saveMeal() {
+  const name = document.getElementById('ml-name').value.trim(); if(!name) return;
+  if (document.getElementById('ml-save-recipe').checked || editMealIsRecipe) {
+    const cat=selMealTypeVal==='breakfast'?'Breakfast':selMealTypeVal==='lunch'?'Lunch':'Dinner';
+    if (!S.recipes) S.recipes = [];
+    if(!S.recipes.find(r=>r.name.toLowerCase()===name.toLowerCase()))
+      S.recipes.push({id:uid(),name,category:cat,notes:document.getElementById('ml-notes').value});
+  }
+  if (!editMealIsRecipe) {
+    const mealDate = document.getElementById('ml-date').value;
+    const meal = {id:editMealId||uid(),name,date:mealDate,type:selMealTypeVal,notes:document.getElementById('ml-notes').value};
+    if (!S.meals) S.meals = [];
+    if(editMealId){const i=S.meals.findIndex(m=>m.id===editMealId);if(i>=0)S.meals[i]=meal;else S.meals.push(meal);}
+    else { S.meals=S.meals.filter(m=>!(m.date===mealDate&&m.type===selMealTypeVal)); S.meals.push(meal); }
+  }
+  saveToFirebase(); closeSheet('sheet-meal'); renderMeals();
+}
+
+function deleteMeal() {
+  if(!editMealId) return;
+  S.meals=(S.meals||[]).filter(m=>m.id!==editMealId);
+  saveToFirebase(); closeSheet('sheet-meal'); renderMeals();
+}
+
+// ============================================================
+// RECIPE DETAIL
+// ============================================================
+function openRecipeDetail(rid) {
+  const r = (S.recipes||[]).find(x=>x.id===rid); if(!r) return;
+  _currentRecipeId = rid;
+  document.getElementById('recipe-detail-cat').textContent = r.category;
+  document.getElementById('recipe-detail-name').textContent = r.name;
+  const notes = r.notes || 'No instructions yet.';
+  const formatted = notes
+    .replace(/INGREDIENTS/g,'\n\nINGREDIENTS').replace(/METHOD:/g,'\n\nMETHOD:')
+    .replace(/TIPS:/g,'\n\nTIPS:').replace(/SAUCE:/g,'\n\nSAUCE:')
+    .replace(/MARINADE:/g,'\n\nMARINADE:').replace(/DRESSING:/g,'\n\nDRESSING:')
+    .replace(/TOPPINGS:/g,'\n\nTOPPINGS:').replace(/BECHAMEL:/g,'\n\nBECHAMEL:')
+    .replace(/BOLOGNESE:/g,'\n\nBOLOGNESE:').replace(/HOLLANDAISE/g,'\n\nHOLLANDAISE')
+    .replace(/APPLE SAUCE:/g,'\n\nAPPLE SAUCE:').replace(/TO SERVE:/g,'\n\nTO SERVE:')
+    .replace(/SERVE WITH:/g,'\n\nSERVE WITH:').replace(/AFTER BAKING:/g,'\n\nAFTER BAKING:')
+    .trim();
+  document.getElementById('recipe-detail-notes').textContent = formatted;
+  openSheet('sheet-recipe');
+}
+
+function addRecipeToMealFromSheet() {
+  const r = (S.recipes||[]).find(x=>x.id===_currentRecipeId); if(!r) return;
+  closeSheet('sheet-recipe');
+  const typeMap = {Breakfast:'breakfast',Lunch:'lunch',Dinner:'dinner'};
+  const mealType = typeMap[r.category]||'dinner';
+  const today = fmtDate(new Date());
+  const existing = (S.meals||[]).find(m=>m.date===today&&m.type===mealType);
+  openMealSheet(existing?existing.id:null, today, mealType);
+  setTimeout(()=>{document.getElementById('ml-name').value=r.name;document.getElementById('ml-notes').value=r.notes||'';}, 60);
+}
+
+function deleteRecipeFromSheet() {
+  if(!_currentRecipeId) return;
+  S.recipes=(S.recipes||[]).filter(r=>r.id!==_currentRecipeId);
+  _currentRecipeId=null; saveToFirebase(); closeSheet('sheet-recipe'); renderMeals();
+  showToast('Recipe deleted');
+}
+
+// ============================================================
+// LIST SHEET
+// ============================================================
+function openListSheet() {
+  selListIconVal='🛒';
+  document.getElementById('ls-name').value='';
+  document.querySelectorAll('#ls-icon-btns .pc-btn').forEach((b,i)=>{b.classList.toggle('sel',i===0);b.style.background=i===0?'var(--text)':'';b.style.color=i===0?'#fff':'';});
+  openSheet('sheet-list');
+  setTimeout(()=>document.getElementById('ls-name').focus(),100);
+}
+function selListIcon(btn) {
+  selListIconVal=btn.dataset.ic;
+  document.querySelectorAll('#ls-icon-btns .pc-btn').forEach(b=>{b.classList.remove('sel');b.style.background='';b.style.color='';});
+  btn.classList.add('sel'); btn.style.background='var(--text)'; btn.style.color='#fff';
+}
+function saveList() {
+  const name=document.getElementById('ls-name').value.trim(); if(!name) return;
+  if(!S.lists)S.lists=[];
+  S.lists.push({id:uid(),name,icon:selListIconVal,items:[]});
+  saveToFirebase(); closeSheet('sheet-list'); renderLists();
+}
+
+// ============================================================
+// ROUTINE SHEET
+// ============================================================
+function openRoutineSheet(id, defaultPeriod) {
+  editRoutineId=id;
+  const r=id?(S.routines||[]).find(x=>x.id===id):null;
+  document.getElementById('sheet-routine-title').textContent=r?'Edit Step':'Add Routine Step';
+  document.getElementById('rt-name').value=r?r.name:'';
+  document.getElementById('rt-del').style.display=r?'block':'none';
+  selRtPeriodVal=r?r.period:(defaultPeriod||'morning');
+  document.querySelectorAll('#rt-period-btns .pc-btn').forEach(b=>{b.classList.remove('sel');b.style.background='';b.style.color='';if(b.dataset.p===selRtPeriodVal){b.classList.add('sel');b.style.background='var(--text)';b.style.color='#fff';}});
+  buildProfileChips('rt-who',r?r.person:'family');
+  openSheet('sheet-routine');
+  setTimeout(()=>document.getElementById('rt-name').focus(),100);
+}
+function selRtPeriod(btn) {
+  selRtPeriodVal=btn.dataset.p;
+  document.querySelectorAll('#rt-period-btns .pc-btn').forEach(b=>{b.classList.remove('sel');b.style.background='';b.style.color='';});
+  btn.classList.add('sel'); btn.style.background='var(--text)'; btn.style.color='#fff';
+}
+function saveRoutine() {
+  const name=document.getElementById('rt-name').value.trim(); if(!name) return;
+  const rt={id:editRoutineId||uid(),name,period:selRtPeriodVal,person:getSelChip('rt-who'),done:false};
+  if(!S.routines)S.routines=[];
+  if(editRoutineId){const i=S.routines.findIndex(r=>r.id===editRoutineId);if(i>=0){rt.done=S.routines[i].done;S.routines[i]=rt;}else S.routines.push(rt);}
+  else S.routines.push(rt);
+  saveToFirebase(); closeSheet('sheet-routine'); showMoreTab('routines');
+}
+function deleteRoutine() {
+  if(!editRoutineId)return;
+  S.routines=(S.routines||[]).filter(r=>r.id!==editRoutineId);
+  saveToFirebase(); closeSheet('sheet-routine'); showMoreTab('routines');
+}
+
+// ============================================================
+// REWARD SHEET
+// ============================================================
+function openRewardSheet() {
+  document.getElementById('rw-name').value='';
+  document.getElementById('rw-stars').value='10';
+  buildProfileChips('rw-who','bailey');
+  openSheet('sheet-reward');
+  setTimeout(()=>document.getElementById('rw-name').focus(),100);
+}
+function saveReward() {
+  const name=document.getElementById('rw-name').value.trim(); if(!name) return;
+  if(!S.rewards)S.rewards=[];
+  S.rewards.push({id:uid(),name,stars:parseInt(document.getElementById('rw-stars').value)||10,person:getSelChip('rw-who')});
+  saveToFirebase(); closeSheet('sheet-reward'); showMoreTab('rewards');
+}
+
+// ============================================================
+// BACKUP & RESTORE
+// ============================================================
+function exportBackup() {
+  if(!S) return;
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download='fam-plan-backup-'+fmtDate(new Date())+'.json';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  showToast('Backup downloaded');
+}
+
+let restoreData=null;
+function handleRestoreFile(event) {
+  const file=event.target.files[0]; if(!file) return;
+  document.getElementById('restore-filename').textContent=file.name;
+  const reader=new FileReader();
+  reader.onload=(e)=>{
+    try {
+      const parsed=JSON.parse(e.target.result);
+      if(!parsed.events||!parsed.tasks||!parsed.starBalances){showToast('Invalid backup file');return;}
+      restoreData=parsed;
+      document.getElementById('restore-confirm-area').style.display='block';
+    } catch(err){showToast('Could not read file');}
+  };
+  reader.readAsText(file);
+}
+
+async function confirmRestore() {
+  if(!restoreData) return;
+  S=restoreData; S._lastUpdated=Date.now();
+  await saveToFirebase();
+  restoreData=null;
+  document.getElementById('restore-confirm-area').style.display='none';
+  document.getElementById('restore-filename').textContent='';
+  document.getElementById('restore-file-input').value='';
+  closeSheet('sheet-backup'); render();
+  showToast('Data restored to Firebase!');
+}
+
+function mergeDefaultRecipes() {
+  const defaults=getDefaultRecipes();
+  let added=0, updated=0;
+  if(!S.recipes)S.recipes=[];
+  defaults.forEach(dr=>{
+    const existing=S.recipes.find(r=>r.name.toLowerCase()===dr.name.toLowerCase());
+    if(!existing){S.recipes.push(dr);added++;}
+    else if(!existing.notes||existing.notes.length<100){existing.notes=dr.notes;existing.category=dr.category;updated++;}
+  });
+  saveToFirebase(); closeSheet('sheet-backup');
+  if(currentTab==='meals')renderMeals();
+  const msg=added>0&&updated>0?'Added '+added+', updated '+updated+' recipes':added>0?'Added '+added+' new recipes':updated>0?'Updated '+updated+' recipes':'All up to date';
+  showToast(msg);
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function celebrate() {
+  const emojis=['🎉','⭐','🌟','✨','🏆','🎊','💫'];
+  const area=document.getElementById('confetti-wrap'); area.innerHTML='';
+  for(let i=0;i<20;i++){
+    const el=document.createElement('div'); el.className='confetti-piece';
+    el.textContent=emojis[Math.floor(Math.random()*emojis.length)];
+    el.style.left=Math.random()*100+'vw'; el.style.animationDelay=Math.random()*0.8+'s';
+    area.appendChild(el);
+  }
+  setTimeout(()=>area.innerHTML='',3000);
+}
+
+function showToast(msg) {
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// ============================================================
+// 50 RECIPES
+// ============================================================
+function getDefaultRecipes() {
+  return [
+    {id:"r1",name:"Spaghetti Bolognese",category:"Dinner",notes:"INGREDIENTS (serves 4): 500g beef mince, 1 brown onion diced, 4 garlic cloves minced, 1 carrot finely diced, 2 celery sticks finely diced, 2 tbsp olive oil, 2 tbsp tomato paste, 1 can 400g crushed tomatoes, 1 cup beef stock, 1 tsp dried oregano, 1 tsp dried basil, salt and pepper, 400g spaghetti, parmesan to serve. METHOD: 1. Heat oil over medium-high heat. Cook onion, carrot, celery 5 min. Add garlic 1 min. 2. Increase heat, add mince, cook breaking up lumps until browned, 5 min. 3. Add tomato paste, cook 2 min. 4. Add crushed tomatoes, stock, oregano, basil. Simmer on low 30 min minimum - 2 hours for best flavour. Season well. 5. Cook spaghetti in salted boiling water until al dente. Reserve 1 cup pasta water. 6. Add pasta to sauce with splash of pasta water. Toss 1-2 min over medium heat. Serve with parmesan. TIPS: Pasta water starch makes sauce cling beautifully. Longer simmer = richer flavour. Don't skip the pasta water step."},
+    {id:"r2",name:"Roast Lamb",category:"Dinner",notes:"INGREDIENTS (serves 6): 2kg leg of lamb, 4 garlic cloves sliced into slivers, 4 rosemary sprigs broken into pieces, 3 tbsp olive oil, 2 tsp salt, 1 tsp black pepper, 1 cup stock for pan, 1kg baby potatoes, 3 carrots chunked, 2 zucchini chunked. METHOD: 1. Remove lamb from fridge 1 hr before cooking. Preheat oven to 220C. 2. Cut 15-20 deep slits all over. Push garlic and rosemary into each slit. 3. Rub all over with olive oil, salt and pepper. 4. Place on rack in roasting pan. Pour stock in base. 5. Roast 220C for 20 min. Reduce to 160C and roast 2.5-3 hrs for well done (75C internal) or 2 hrs for medium (65C). 6. Last hour scatter potatoes and carrots around lamb. Add zucchini last 30 min. 7. Rest 20-30 min covered loosely with foil before carving. 8. Make gravy from pan juices with flour and extra stock. TIPS: Resting is critical - allows juices to redistribute so every slice stays juicy. Never skip the rest."},
+    {id:"r3",name:"Pancakes",category:"Breakfast",notes:"INGREDIENTS (serves 4, makes 12): 2 cups plain flour, 2 tsp baking powder, 2 tbsp caster sugar, pinch salt, 2 large eggs, 1.5 cups milk, 2 tbsp melted butter plus extra for cooking, 1 tsp vanilla. METHOD: 1. Whisk flour, baking powder, sugar and salt in a large bowl. Make a well. 2. Whisk eggs, milk, butter and vanilla in a jug. 3. Pour wet into well and whisk until just combined - lumps are fine. Do not overmix. Rest 5 min. 4. Heat non-stick pan medium heat. Add butter. 5. Pour 1/4 cup batter per pancake. Cook until bubbles appear and edges set, 2-3 min. Flip, cook 1-2 min more until golden. 6. Keep warm in 100C oven. Serve with maple syrup, berries or banana. TIPS: Do not overmix - lumpy batter = fluffy pancakes. Rest the batter. Medium heat is important - too hot and outside burns before inside cooks."},
+    {id:"r4",name:"Caesar Salad",category:"Lunch",notes:"INGREDIENTS (serves 4): 2 cos lettuces torn, 200g streaky bacon diced, 1 cup croutons, 1/2 cup shaved parmesan. DRESSING: 3 tbsp whole-egg mayo, 2 tbsp lemon juice, 1 tsp worcestershire, 1 small garlic clove crushed, 2 anchovy fillets chopped (optional but recommended), 1 tbsp olive oil, salt and pepper. METHOD: 1. Cook bacon in dry pan over medium-high until very crispy. Drain on paper towel. 2. Croutons: toss cubed sourdough in olive oil, salt, garlic powder. Bake 200C 10 min until golden. 3. Whisk all dressing ingredients until smooth. Adjust lemon and salt. 4. Put lettuce in large bowl. Add most dressing and toss well to coat. 5. Add bacon, croutons and parmesan. Toss gently. Drizzle remaining dressing over. Serve immediately. TIPS: Anchovies don't taste fishy - they add depth and umami. Dress right before serving so croutons stay crispy."},
+    {id:"r5",name:"Chicken Stir-fry",category:"Dinner",notes:"INGREDIENTS (serves 4): 600g chicken breast thinly sliced, 1 broccoli head in florets, 1 red capsicum sliced, 2 heads bok choy halved, 3 garlic cloves minced, 1 tbsp fresh ginger grated, 2 tbsp vegetable oil, rice to serve. SAUCE: 3 tbsp oyster sauce, 2 tbsp soy sauce, 1 tbsp sesame oil, 1 tsp cornflour mixed with 2 tbsp water. METHOD: 1. Mix sauce in small bowl. Set aside. 2. Heat wok over high heat until smoking. Add 1 tbsp oil. 3. Add chicken in single layer - don't stir for 1 min to sear. Stir-fry 3-4 min until cooked. Remove to plate. 4. Add remaining oil. Add garlic and ginger, stir-fry 30 sec. 5. Add broccoli and capsicum, 2-3 min. Add bok choy, 1 min. 6. Return chicken. Pour over sauce and toss well. Cook 1 min until sauce thickens. Serve over rice. TIPS: High heat is essential - creates slightly charred flavour. Don't overcrowd or everything steams instead of fries."},
+    {id:"r6",name:"Lamb Chops and Veg",category:"Dinner",notes:"INGREDIENTS (serves 4): 8 lamb loin chops, 1kg baby potatoes halved, 3 large carrots chunked, 2 zucchini thick rounds, 1 red onion wedges, 4 tbsp olive oil, 2 tsp dried rosemary, 1 tsp garlic powder, salt and pepper, lemon to serve. METHOD: 1. Preheat oven 200C. Toss potatoes and carrots with 2 tbsp oil, rosemary, garlic powder, salt, pepper. Roast 25 min. 2. Add zucchini and onion, toss. Roast 15 min more until golden. 3. Remove chops from fridge 20 min early. Pat dry, rub with remaining oil, rosemary, salt, pepper. 4. Heat heavy pan or BBQ over high heat. Cook chops 3-4 min per side for medium. 5. Rest 3-5 min. Serve with roasted veg and lemon squeeze. TIPS: Dry the chops well before cooking - moisture prevents a good sear. Always rest chops before serving."},
+    {id:"r7",name:"Beef Tacos",category:"Dinner",notes:"INGREDIENTS (serves 4): 500g beef mince, 1 brown onion finely diced, 3 garlic cloves minced, 1 packet taco seasoning or 2 tsp cumin plus 1 tsp each paprika, chilli powder, oregano, 1/2 cup water, 8-10 small tortillas. TOPPINGS: Shredded lettuce, grated cheese, sour cream, avocado, salsa, lime, fresh coriander. METHOD: 1. Heat oil in pan. Cook onion 3 min. Add garlic 1 min. 2. Add mince, cook breaking up lumps until browned, 5 min. Drain excess fat. 3. Add seasoning and water. Stir and simmer 3-5 min until liquid absorbs. Season. 4. Warm tortillas in damp paper towel in microwave 30 sec or dry pan. 5. Set up toppings in bowls. Let everyone build their own. TIPS: Drain fat from mince or filling goes soggy. Warming tortillas makes them pliable and much tastier."},
+    {id:"r8",name:"Pumpkin Soup",category:"Lunch",notes:"INGREDIENTS (serves 4-6): 1.2kg butternut pumpkin peeled and chunked, 1 brown onion roughly chopped, 4 garlic cloves unpeeled, 3 tbsp olive oil, 750ml stock, 1/2 cup thickened cream, 1 tsp ground cumin, salt and pepper. TO SERVE: extra cream, crusty bread, toasted pepitas. METHOD: 1. Preheat 200C. Spread pumpkin and onion on tray. Nestle garlic between. Drizzle with oil, season. Roast 30-35 min until golden and tender. 2. Squeeze garlic out of skins. Transfer everything to pot. 3. Add stock and cumin. Blend with stick blender until completely smooth. Add more stock if too thick. 4. Stir in cream. Heat gently - don't boil. Adjust seasoning. 5. Serve with swirl of cream, pepitas and crusty bread. TIPS: Roasting pumpkin adds depth and sweetness you can't get from boiling. Unpeeled garlic develops a mellow sweet flavour when roasted."},
+    {id:"r9",name:"Grilled Salmon",category:"Dinner",notes:"INGREDIENTS (serves 4): 4 salmon fillets skin-on 180g each, 2 tbsp olive oil, 2 garlic cloves crushed, zest and juice of 1 lemon, 2 tbsp fresh dill chopped or 1 tsp dried, salt and pepper. LEMON BUTTER SAUCE: 60g butter, 2 tbsp lemon juice, 1 tbsp capers optional, 1 tbsp parsley chopped. METHOD: 1. Pat salmon dry. Mix oil, garlic, lemon zest, dill, salt, pepper. Coat salmon and marinate 15-30 min. 2. Heat non-stick pan over medium-high. Place salmon skin-side down. Cook without moving 4 min until skin is very crispy. 3. Flip, cook 2-3 min. Done when flesh just flakes when pressed at thickest point. 4. Lemon butter: melt butter in small pan over medium until golden and nutty, 2-3 min. Add lemon juice, capers, parsley. Swirl and remove from heat immediately. 5. Serve over steamed greens with sauce drizzled over. TIPS: Don't move salmon for first 4 min - this is how you get crispy skin. Don't overcook - salmon is best slightly translucent in very centre."},
+    {id:"r10",name:"Fried Rice",category:"Dinner",notes:"INGREDIENTS (serves 4): 3 cups cooked rice day-old and refrigerated, 3 eggs lightly beaten, 1 cup frozen peas and corn, 1 large carrot finely diced, 3 spring onions sliced, 3 garlic cloves minced, 2 tbsp vegetable oil. SAUCE: 3 tbsp soy sauce, 1 tbsp oyster sauce, 1 tsp sesame oil, 1/2 tsp white pepper. METHOD: 1. Mix sauce in small bowl. 2. Heat wok over very high heat. Add 1 tbsp oil. Scramble eggs until just underdone, 1 min. Remove to plate and break into pieces. 3. Add remaining oil. Stir-fry garlic 30 sec. Add carrot 2 min. Add peas and corn 1 min. 4. Add cold rice and spread across wok. Let sit without stirring 1 min to fry and dry. Stir-fry 2-3 min breaking up lumps. 5. Pour sauce over rice and toss well. Return eggs, fold through. 6. Toss through spring onions. Serve topped with remaining. TIPS: Day-old refrigerated rice is essential - fresh rice is too wet. High heat and not stirring for that first minute gives restaurant-style flavour."},
+    {id:"r11",name:"Avocado Toast",category:"Breakfast",notes:"INGREDIENTS (serves 2): 4 thick slices sourdough, 2 ripe avocados, juice of 1/2 lemon, pinch chilli flakes, salt and pepper, 2 eggs poached, 100g cherry tomatoes halved, 50g feta crumbled, drizzle olive oil. METHOD: 1. Toast sourdough until golden and crispy. 2. Halve avocados, scoop flesh into bowl. Add lemon juice, chilli flakes, salt and pepper. Mash with fork - leave slightly chunky. 3. Poach eggs: bring deep pan of water to gentle simmer. Add splash of vinegar. Crack each egg into small cup then slide into water. Cook 3-4 min for runny yolk. Drain on paper towel. 4. Spread avocado generously over toast. 5. Top with poached egg, cherry tomatoes and feta. Drizzle with oil, season again with salt and chilli flakes. TIPS: Salt the avocado properly - underseasoned avo is the most common mistake. Vinegar in poaching water helps egg white hold together neatly."},
+    {id:"r12",name:"Chicken Schnitzel",category:"Dinner",notes:"INGREDIENTS (serves 4): 4 large chicken breasts, 1/2 cup seasoned plain flour, 2 eggs lightly beaten, 1.5 cups panko breadcrumbs, 1/2 cup vegetable oil, lemon wedges. OPTIONAL: 2 tbsp grated parmesan, 1 tsp garlic powder stirred through crumbs. METHOD: 1. Place chicken between baking paper sheets. Pound to even 1cm thickness. This is key. 2. Set up crumbing station: flour, eggs, breadcrumbs in three shallow bowls. 3. Coat each piece in flour shaking off excess, dip in egg letting excess drip, press firmly into breadcrumbs to fully coat. 4. Heat oil in large pan over medium heat. Test with breadcrumb pinch - it should sizzle. 5. Cook schnitzels 3-4 min per side until deep golden. Don't move them - let crust develop. 6. Drain on paper towel. Season with salt immediately. Serve with lemon and salad. TIPS: Pounding flat means even cooking and it won't dry out. Panko gives much crispier result than regular breadcrumbs."},
+    {id:"r13",name:"Veggie Frittata",category:"Breakfast",notes:"INGREDIENTS (serves 4-6): 8 large eggs, 1/4 cup cream or milk, 1 red capsicum diced, 150g mushrooms sliced, 1 zucchini diced, 2 handfuls baby spinach, 1 cup grated cheese, 1/2 red onion sliced, 2 tbsp olive oil, salt and pepper. METHOD: 1. Preheat oven 180C. 2. Heat oil in 24-26cm ovenproof pan over medium. Cook onion 3 min. Add capsicum and mushrooms 4 min. Add zucchini 2 min. Season. 3. Add spinach, stir until just wilted 1 min. Spread vegetables evenly. 4. Whisk eggs and cream with salt and pepper. Pour over veg. Shake pan so egg gets underneath. 5. Scatter cheese on top. Cook on stove medium-low 3-4 min until edges set. 6. Transfer to oven 12-15 min until just set in middle with slight wobble. Don't overbake. 7. Cool 5 min before slicing. TIPS: The slight wobble when removed is intentional - carryover heat finishes it. Overbaking makes it rubbery."},
+    {id:"r14",name:"Butter Chicken",category:"Dinner",notes:"INGREDIENTS (serves 4): 700g chicken thighs in chunks. MARINADE: 1 cup yoghurt, 2 tsp garam masala, 1 tsp each turmeric, cumin, chilli powder, salt, 3 garlic cloves minced, 1 tbsp ginger grated. SAUCE: 2 tbsp butter, 1 onion finely diced, 4 garlic cloves, 1 tbsp ginger, 1 tbsp butter chicken spice blend, 2 tbsp tomato paste, 1 can 400g crushed tomatoes, 1 cup thickened cream, 1 tbsp sugar, salt. METHOD: 1. Mix chicken with marinade. Refrigerate 1 hr minimum, overnight is best. 2. Cook chicken in batches over high heat until browned and slightly charred at edges. Set aside. 3. In same pan melt butter. Cook onion 5 min. Add garlic and ginger 2 min. Add spice blend and tomato paste, cook 2 min stirring - toasting is key for flavour. 4. Add crushed tomatoes. Simmer 10 min. Blend smooth with stick blender if desired. 5. Stir in cream and sugar. Add chicken with juices. Simmer 15 min. Season. 6. Serve over basmati rice with naan and coriander. TIPS: Overnight marinating makes a big difference. Blending the sauce makes it silky smooth."},
+    {id:"r15",name:"BLT Sandwich",category:"Lunch",notes:"INGREDIENTS (serves 2): 4 thick bread slices, 6-8 rashers streaky bacon, 4 large iceberg lettuce leaves, 2 ripe tomatoes thickly sliced, 3 tbsp whole-egg mayo, salt and pepper. METHOD: 1. Cook bacon in dry pan over medium-high until deeply caramelised and crispy on both sides, 4-5 min. Drain on paper towel. 2. Toast bread until golden. 3. Spread mayo generously on all four slices. 4. Layer on two slices: lettuce, tomato. Season tomato well with salt and pepper - this step matters. 5. Add 2-3 rashers bacon per sandwich. 6. Press remaining bread on top. Slice diagonally. Eat immediately. TIPS: Crispy bacon is non-negotiable. Season the tomato slices directly. Eat immediately so toast stays crispy."},
+    {id:"r16",name:"Beef Burgers",category:"Dinner",notes:"INGREDIENTS (serves 4): 600g beef mince 80/20 fat ratio, 1 brown onion finely grated, 1 garlic clove minced, 1 egg, 1/4 cup breadcrumbs, 1 tsp worcestershire, 1 tsp salt, 1/2 tsp black pepper, 4 burger buns. TOPPINGS: cheese slices, lettuce, tomato, pickles, beetroot, ketchup, mustard, burger sauce. METHOD: 1. Combine mince, onion, garlic, egg, breadcrumbs, worcestershire, salt and pepper. Mix gently with hands until just combined - don't overwork. 2. Divide into 4 portions. Shape into patties slightly wider than buns. Press small indent in centre of each - stops doming. Refrigerate 30 min if possible. 3. Heat BBQ or heavy pan to high. Brush with oil. Cook 3-4 min per side for medium. Add cheese last minute, cover to melt. 4. Toast buns cut-side down 1 min. Build and serve. TIPS: Don't press patties with spatula while cooking - you're squeezing out all the juices. The indent in the middle is key to flat even patties."},
+    {id:"r17",name:"Porridge",category:"Breakfast",notes:"INGREDIENTS (serves 2): 1 cup rolled oats not instant, 2 cups full-cream milk or half milk half water, 1 tbsp brown sugar or honey, pinch salt, 1/2 tsp vanilla optional. TOPPINGS: sliced banana, berries, stewed apple, honey, cinnamon, nut butter, toasted nuts. METHOD: 1. Combine oats, milk and salt in medium saucepan. Stir. 2. Cook over medium heat stirring frequently for 5-7 min until oats absorb liquid and porridge is thick and creamy. Add splash more milk if thickens too fast. 3. Remove from heat. Stir in sugar or honey and vanilla. 4. Serve topped with your choice of toppings. TIPS: Low and slow makes creamier porridge than high heat. Stir regularly especially towards end to prevent sticking. Porridge continues thickening as it sits - serve immediately."},
+    {id:"r18",name:"Roast Chicken",category:"Dinner",notes:"INGREDIENTS (serves 4): 1.8kg whole chicken, 60g softened butter, 2 garlic cloves minced plus 2 whole, lemon zest, 4 thyme sprigs or 1 tsp dried, 1.5 tsp salt, 1/2 tsp black pepper, 1 lemon halved, 1 cup stock for pan. METHOD: 1. Remove chicken from fridge 30-45 min before. Preheat 200C. 2. Mix butter with minced garlic, lemon zest, thyme, salt, pepper. 3. Pat chicken completely dry - essential for crispy skin. 4. Loosen skin over breast with hand. Push half butter under skin and massage over breast. Rub remaining butter all over outside. 5. Put lemon halves and whole garlic inside cavity. Tie legs with kitchen twine. 6. Place breast-side up in roasting pan. Pour stock in base. 7. Roast 200C for 1hr 15min to 1hr 30min until juices run clear when thigh is pierced and skin is deep golden. 8. Rest 15 min before carving. TIPS: Dry skin equals crispy skin. For extra crispiness, leave uncovered in fridge overnight after buttering."},
+    {id:"r19",name:"Greek Salad",category:"Lunch",notes:"INGREDIENTS (serves 4): 1 Lebanese cucumber in chunky half-moons, 250g cherry tomatoes halved, 1/2 red onion very thinly sliced, 1 cup kalamata olives, 1 red capsicum in chunks, 180g feta block cut into chunks. DRESSING: 4 tbsp extra virgin olive oil, 2 tbsp red wine vinegar, 1 tsp dried oregano, 1/2 tsp salt, 1/4 tsp black pepper. METHOD: 1. Soak red onion in cold water 10 min to remove harsh bite. Drain and pat dry. 2. Gently combine cucumber, tomatoes, onion, olives and capsicum in large bowl. 3. Shake all dressing ingredients in a small jar. 4. Pour dressing over salad and toss gently. 5. Arrange feta chunks on top - don't toss them in or they'll break up. Finish with extra dried oregano. TIPS: Use a feta block not pre-crumbled - completely different taste. Soaking the red onion makes the salad much more pleasant."},
+    {id:"r20",name:"Banana Smoothie",category:"Breakfast",notes:"INGREDIENTS (serves 2): 2 ripe bananas fresh or frozen, 1 cup full-cream milk, 1 cup yoghurt, 1 tbsp honey, 1 cup ice, 1 tsp vanilla. ADD-INS: 2 tbsp peanut butter, protein powder, 1/2 cup oats for thickness, handful spinach, medjool dates instead of honey. METHOD: 1. Frozen bananas make a thicker colder smoothie - great way to use overripe bananas. 2. Add to blender in order: milk first, then yoghurt, banana, honey, ice. 3. Blend on high 30-45 seconds until completely smooth. 4. Taste - add more honey if needed. Too thick - add splash more milk. 5. Pour and serve immediately. TIPS: Very spotty overripe bananas are sweeter and make the best smoothies. Freeze peeled ripe bananas in zip-lock bags so you always have them."},
+    {id:"r21",name:"Slow-Cooked Beef Stew",category:"Dinner",notes:"INGREDIENTS (serves 6): 1.2kg chuck steak or gravy beef in 4cm chunks, 1/2 cup seasoned flour, 3 tbsp olive oil, 1 onion diced, 3 garlic cloves minced, 2 carrots, 2 celery sticks, 250g mushrooms halved, 2 tbsp tomato paste, 1 cup red wine or extra stock, 2 cups beef stock, 1 can 400g crushed tomatoes, 2 thyme sprigs, 2 bay leaves, salt and pepper. METHOD: 1. Toss beef in seasoned flour. 2. Brown beef in batches over high heat until deep brown all over. Remove to plate. Do not skip - this is crucial for flavour. 3. Cook onion 5 min. Add garlic, carrot, celery 3 min. Add mushrooms 2 min. 4. Stir in tomato paste 1 min. Add wine and scrape browned bits off base - pure flavour. Simmer 2 min. 5. Return beef. Add stock, tomatoes, thyme, bay leaves. 6. SLOW COOKER: LOW 8 hrs or HIGH 5 hrs. OVEN: covered at 150C for 2.5-3 hrs. 7. Remove bay leaves. Season well. Serve with mash or crusty bread. TIPS: Browning the meat in batches is the most important step. The browned bits on the pot base is pure flavour."},
+    {id:"r22",name:"Fish and Chips",category:"Dinner",notes:"INGREDIENTS (serves 4): 800g white fish barramundi or flathead, vegetable oil for deep frying. BEER BATTER: 1 cup plain flour, 1 cup cold beer light lager, 1 tsp baking powder, 1 tsp salt, 1/2 tsp white pepper. CHIPS: 1kg sebago potatoes. METHOD: 1. CHIPS: Cut into thick chips. Soak in cold water 30 min. Drain and dry very well. Heat oil to 160C. Fry in batches 5 min until cooked but not coloured. Drain. This is par-cooking. 2. BATTER: Whisk flour, baking powder, salt, pepper. Whisk in cold beer until smooth but light. Refrigerate. 3. Increase oil to 190C. Fry chips second time 3-4 min until deeply golden and crispy. Drain on paper towels. Season with salt immediately. Keep warm. 4. Pat fish dry. Dip in batter letting excess drip. Lower into 190C oil. Fry 3-4 min per side until golden. Drain. Season. 5. Serve with lemon, tartare sauce and mushy peas. TIPS: The double-fry is the secret to perfectly crispy chips. Cold beer in batter creates lighter crispier result."},
+    {id:"r23",name:"Mushroom Risotto",category:"Dinner",notes:"INGREDIENTS (serves 4): 300g arborio rice, 300g mixed mushrooms sliced, 20g dried porcini mushrooms optional, 1 onion finely diced, 3 garlic cloves, 1 cup dry white wine, 1.2-1.5L warm stock kept simmering, 80g cold butter in pieces, 1/2 cup parmesan grated, 2 tbsp olive oil, salt and pepper, fresh parsley. METHOD: 1. If using porcini soak in boiling water 20 min. Drain and reserve soaking liquid for stock. 2. Keep stock warm and simmering throughout. 3. Cook onion in olive oil 5 min. Add garlic 1 min. 4. Add fresh mushrooms, cook over high heat 5-7 min until golden. Season. Remove half and set aside for topping. 5. Add rice, stir 2 min until coated and edges go translucent. 6. Add wine, stir constantly until absorbed. 7. Add stock one ladle at a time, stirring constantly and waiting until each is absorbed before adding next. Takes 18-20 min. Rice should be al dente. 8. Remove from heat. Stir in cold butter and parmesan vigorously - creates the creamy texture. Season well. 9. Serve topped with reserved mushrooms, extra parmesan and parsley. TIPS: Constant stirring is not optional - it releases starch to create the creamy sauce. Cold butter at the end is the restaurant secret."},
+    {id:"r24",name:"Pork Belly",category:"Dinner",notes:"INGREDIENTS (serves 6): 1.5kg pork belly skin-on, 1 tbsp olive oil, 2 tsp sea salt flakes for skin, 1 tsp ground fennel seeds, 1 tsp garlic powder, 1 tsp black pepper. APPLE SAUCE: 4 Granny Smith apples peeled cored diced, 2 tbsp sugar, 2 tbsp butter, juice 1/2 lemon. METHOD: 1. DAY BEFORE: Score pork skin in diamond pattern. Pat completely dry. Rub salt flakes vigorously into scored skin. Leave uncovered in fridge overnight - dries skin for maximum crackling. 2. Remove 1 hr before cooking. Preheat 240C. 3. Rub meat side with oil, fennel, garlic, pepper. 4. Place skin-side up on rack in roasting pan. Roast at 240C for 25-30 min until skin blisters and crackles. Watch closely. 5. Reduce to 160C. Continue roasting 1.5-2 hrs until meat is completely tender when pierced. 6. Rest 15 min. 7. APPLE SAUCE: simmer all ingredients 15 min until apples are soft. Mash or blend smooth. TIPS: Completely dry skin is the secret to crackling. If skin hasn't crackled after 30 min, turn grill on for 5 min and watch closely."},
+    {id:"r25",name:"Nachos",category:"Dinner",notes:"INGREDIENTS (serves 4): 250g corn chips, 1 can 400g refried or black beans drained, 2 cups grated cheese mix cheddar and mozzarella, 1 jalapeno sliced, 400g seasoned beef mince or pulled chicken optional. TOPPINGS: sour cream, guacamole or avocado, salsa, fresh coriander, lime wedges. METHOD: 1. Preheat 180C. Line large baking tray with baking paper. 2. Spread corn chips in single layer. Spoon beans over chips. Add mince if using. 3. Scatter cheese generously. Add jalapeno slices. 4. Bake 10-12 min until cheese is fully melted and bubbling. 5. Immediately add cold toppings: dollops of sour cream, guacamole, salsa, coriander and big squeeze of lime. Serve immediately from tray. TIPS: Hot/cold contrast is what makes nachos great. Single layer chips are important so every chip gets topped."},
+    {id:"r26",name:"Prawn Linguine",category:"Dinner",notes:"INGREDIENTS (serves 4): 400g linguine, 500g raw prawns peeled and deveined, 4 garlic cloves thinly sliced, 1 long red chilli sliced, 250g cherry tomatoes halved, 1/2 cup dry white wine, juice and zest of 1 lemon, 4 tbsp extra virgin olive oil, large handful flat-leaf parsley chopped, salt and pepper. METHOD: 1. Cook pasta in well-salted boiling water until 1 min short of al dente. Reserve 1 cup pasta water. 2. Heat 2 tbsp oil in large pan over medium. Add garlic and chilli. Cook gently 2 min - just soften, don't brown. 3. Increase heat to high. Add prawns in single layer. Cook 1 min per side until just pink. Remove to plate - don't overcook. 4. Add tomatoes, cook 2 min until blistering. Add wine, simmer 2-3 min. 5. Add drained pasta with big splash pasta water. Toss 1-2 min over medium heat. Return prawns, add lemon juice and zest, remaining oil and parsley. Toss well. Season generously. Serve immediately. TIPS: Prawns overcook in seconds - pull off heat the moment they're pink. Pasta water is your friend for sauce consistency."},
+    {id:"r27",name:"Vegetable Curry",category:"Dinner",notes:"INGREDIENTS (serves 4): 400g cauliflower in florets, 2 large potatoes peeled and chunked, 1 can 400g chickpeas drained, 1 can 400ml coconut milk, 1 can 400g crushed tomatoes, 3 tbsp curry paste madras for medium heat, 1 onion diced, 4 garlic cloves, 1 tbsp fresh ginger, 2 tbsp oil, 1 tsp sugar, salt, fresh coriander and rice to serve. METHOD: 1. Heat oil in large pot. Cook onion 5 min. Add garlic and ginger 2 min. 2. Add curry paste, stir and cook 2 min - blooms spices and is important for flavour. 3. Add potato, stir to coat, cook 2 min. 4. Pour in coconut milk and tomatoes. Add sugar. Bring to simmer. 5. Cook 10 min, then add cauliflower. Simmer 15 min until potato and cauliflower are completely tender. 6. Add chickpeas, cook 5 min. Season well. 7. Serve over basmati rice with coriander and naan. EXTRAS: Stir through spinach at end, or add green beans with cauliflower. Dollop of yoghurt on serving is delicious."},
+    {id:"r28",name:"BBQ Lamb Skewers",category:"Dinner",notes:"INGREDIENTS (serves 4): 800g lamb shoulder or leg in 3cm chunks, 8 skewers soak wooden ones 30 min. MARINADE: 4 tbsp olive oil, juice 1 lemon, 4 garlic cloves minced, 1.5 tsp cumin, 1 tsp paprika, 1 tsp coriander, 1/2 tsp cinnamon, 1 tsp salt, 1/2 tsp pepper. TZATZIKI: 1 cup Greek yoghurt, 1/2 cucumber grated with water squeezed out, 1 garlic clove crushed, 1 tbsp lemon juice, 1 tbsp dill or mint, salt. METHOD: 1. Combine marinade. Add lamb and mix well. Refrigerate minimum 2 hrs, overnight is best. 2. Make tzatziki: combine all ingredients, season, refrigerate. 3. Thread lamb onto skewers 4-5 pieces each. 4. Preheat BBQ or grill pan to high. Brush with oil. Cook 3-4 min per side turning twice for total 8-10 min. Charred edges but still juicy inside. Rest 3 min. 5. Serve with warm flatbread, tzatziki, tabouleh, tomatoes and onion. TIPS: Longer marinade means more tender and flavoursome. Lamb shoulder stays juicier than leg on the BBQ."},
+    {id:"r29",name:"Eggs Benedict",category:"Breakfast",notes:"INGREDIENTS (serves 4): 8 eggs, 4 English muffins split and toasted, 8 slices ham or back bacon cooked. HOLLANDAISE: 3 egg yolks, 1 tbsp cold water, 150g warm clarified or unsalted butter, 1 tbsp lemon juice, salt, white pepper, pinch cayenne. METHOD: 1. HOLLANDAISE: In heatproof bowl over barely simmering water bain-marie, whisk yolks and water until pale thick and tripled in volume, 3-5 min. Bowl must not touch water. Remove from heat. 2. Drizzle in warm butter extremely slowly - a few drops at a time - whisking constantly. Sauce will emulsify to thick creamy texture. Season with lemon juice, salt, white pepper and cayenne. Keep warm. 3. POACH EGGS: Wide deep pan of water to gentle simmer. Add splash white vinegar. Crack each egg into small cup. Stir water to create gentle whirlpool. Slide egg in. Cook 3-4 min for runny yolk. Drain on paper towel. 4. ASSEMBLE: 2 muffin halves per plate. Top with ham, poached egg, generous drizzle hollandaise. Finish with chives, black pepper and pinch cayenne. TIPS: Hollandaise splits if butter added too fast or heat too high. If it splits, whisk fresh yolk in clean bowl then slowly whisk in the split sauce."},
+    {id:"r30",name:"Bircher Muesli",category:"Breakfast",notes:"INGREDIENTS (serves 4, make night before): 2 cups rolled oats, 1.5 cups apple juice or milk, 1/2 cup plain yoghurt, 1 large apple grated skin on, 2 tbsp honey or maple syrup, 1 tsp vanilla, 1 tsp cinnamon, 1/2 cup mixed dried fruit cranberries, sultanas, apricots. TO SERVE: extra yoghurt, fresh berries, toasted almonds, honey. METHOD: 1. NIGHT BEFORE: Combine oats, apple juice, yoghurt, grated apple, honey, vanilla and cinnamon in large bowl. Stir well. Cover and refrigerate overnight - oats absorb liquid and become creamy and soft. 2. MORNING: Stir well. Loosen with splash of milk if too thick. Adjust sweetness with honey. 3. Divide into bowls. Top with berries, toasted nuts and extra yoghurt. Drizzle with honey. MAKE AHEAD: Keeps 4 days in fridge - flavour improves the longer it sits. Great for meal prep. TIPS: Grating the apple gives much better texture than dicing. It almost melts into the oats overnight."},
+    {id:"r31",name:"Smashed Avo and Feta Toast",category:"Breakfast",notes:"INGREDIENTS (serves 2): 4 thick sourdough slices, 2 large ripe avocados, juice 1/2 lemon, 1/2 tsp chilli flakes, 1 garlic clove halved, 100g feta, 1 cup cherry tomatoes halved, 2 tbsp dukkah, extra virgin olive oil, flaky sea salt, fresh herbs. METHOD: 1. Toast bread until golden and crispy. While warm, rub cut side of garlic clove lightly over surface - adds subtle garlic backdrop. 2. Scoop avocado flesh into bowl. Add lemon juice, chilli flakes and good pinch of flaky salt. Mash with fork - leave slightly chunky. 3. Taste the avo - it needs more salt than you think. 4. Spread smashed avo generously over toast. Crumble feta over. 5. Scatter cherry tomatoes. Sprinkle dukkah generously. Drizzle olive oil. Finish with herbs, extra salt and chilli flakes. TIPS: The garlic-rubbed toast is a subtle touch that makes a real difference. Avocados must be ripe - press at narrow end, it should give slightly."},
+    {id:"r32",name:"French Toast",category:"Breakfast",notes:"INGREDIENTS (serves 4): 8 thick slices brioche or sourdough day-old is best, 3 large eggs, 1/2 cup full-cream milk, 2 tbsp thickened cream, 1 tsp vanilla, 1 tsp cinnamon, 2 tbsp caster sugar, pinch salt, 30g butter. TO SERVE: maple syrup, icing sugar, sliced banana, berries, double cream or ice cream. METHOD: 1. Whisk eggs, milk, cream, vanilla, cinnamon, sugar and salt together. 2. Heat non-stick pan over medium heat. Add knob of butter and let foam subside. 3. Dip bread slice in egg mixture, soak 15-20 seconds per side - saturated but not falling apart. 4. Cook 2-3 min until deep golden brown. Flip carefully, cook 2 min more. 5. Remove to warm plate. Repeat with remaining bread adding butter as needed. 6. Serve dusted with icing sugar, maple syrup and your choice of banana, berries or ice cream. TIPS: Thicker bread soaks up more custard without falling apart. Day-old bread is less likely to go soggy. Medium heat is critical."},
+    {id:"r33",name:"Toasted Muesli",category:"Breakfast",notes:"INGREDIENTS (makes large jar, 12 servings): 3 cups rolled oats, 1 cup raw mixed nuts roughly chopped, 1/2 cup sunflower seeds, 1/2 cup pepitas, 1/2 cup shredded coconut, 3 tbsp coconut oil melted, 3 tbsp honey or maple syrup, 1 tsp vanilla, 1 tsp cinnamon, 1/2 tsp salt. AFTER BAKING: 1 cup mixed dried fruit, 1/2 cup dark chocolate chips optional. METHOD: 1. Preheat 170C. Line large baking tray with baking paper. 2. Combine oats, nuts, seeds and coconut in large bowl. Mix melted oil, honey, vanilla, cinnamon and salt separately. 3. Pour wet over dry and toss well to coat everything. 4. Spread in single layer on tray. 5. Bake 20-25 min stirring once halfway until golden. Watch closely at end - goes from golden to burnt quickly. 6. Remove from oven. Leave completely undisturbed to cool on tray - this forms clusters. Do not stir while warm. 7. Once completely cool break into clusters and mix in dried fruit and chocolate. Store in airtight jar up to 3 weeks. TIPS: Not stirring while cooling is the secret to proper clusters."},
+    {id:"r34",name:"Chicken and Salad Wrap",category:"Lunch",notes:"INGREDIENTS (serves 2): 2 large flour tortillas, 2 cooked chicken breasts or rotisserie chicken, 2 tbsp hummus or mayo, 4 cos lettuce leaves, 1 ripe tomato sliced, 1/2 cucumber sliced, 1/2 avocado sliced, 1/2 cup grated carrot, handful baby spinach, salt and pepper, lemon juice. OPTIONAL: cheese, sun-dried tomatoes, sweet chilli sauce. METHOD: 1. If using raw chicken pan-fry or grill 5-6 min per side. Rest 5 min then slice thinly. 2. Warm tortillas in damp paper towel in microwave 20 sec or dry pan 30 sec per side. 3. Lay flat. Spread hummus or mayo across centre leaving edges clear. 4. Layer in centre: lettuce first as moisture barrier, then tomato, cucumber, avocado, carrot, spinach. Season with salt, pepper and lemon. 5. Place chicken on top. 6. Fold in short ends, roll up firmly from bottom. Slice diagonally. TIPS: Warming the wrap is important - cold wraps crack. Lettuce first stops wrap going soggy."},
+    {id:"r35",name:"Pumpkin and Feta Salad",category:"Lunch",notes:"INGREDIENTS (serves 4 as side, 2 as main): 600g butternut pumpkin in 2cm wedges, 180g Persian or regular feta, 120g rocket or mixed leaves, 250g cherry tomatoes halved, 1/2 red onion thinly sliced, 1/2 cup toasted pine nuts or pepitas, 3 tbsp olive oil, salt and pepper. DRESSING: 3 tbsp extra virgin olive oil, 2 tbsp balsamic glaze not vinegar, 1 tsp dijon mustard, salt and pepper. METHOD: 1. Preheat 200C. Toss pumpkin with olive oil, salt, pepper. Roast 25-30 min turning once until golden and caramelised. Cool slightly. 2. Soak red onion in cold water 10 min. Drain. 3. Toast pine nuts or pepitas in dry pan 3-4 min until golden. Watch closely. 4. Whisk dressing. 5. On large serving plate arrange rocket. Add tomatoes, onion and warm pumpkin. 6. Crumble feta generously on top. Scatter nuts. 7. Drizzle dressing just before serving. TIPS: Warm pumpkin wilts rocket slightly which is lovely. Balsamic glaze is much thicker and sweeter than vinegar."},
+    {id:"r36",name:"Tuna Pasta Salad",category:"Lunch",notes:"INGREDIENTS (serves 4): 300g pasta penne or fusilli, 2 cans 185g each tuna in springwater drained, 250g cherry tomatoes halved, 1 cucumber quartered and sliced, 1/2 cup kalamata olives, 3 tbsp baby capers, 1/2 red onion finely diced, 1/2 cup parsley chopped. DRESSING: 4 tbsp extra virgin olive oil, 3 tbsp lemon juice, 1 tsp dijon mustard, 1 garlic clove crushed, salt and pepper. METHOD: 1. Cook pasta in well-salted boiling water until al dente. Drain and rinse under cold water. Shake off excess water. 2. Make dressing: whisk all ingredients. 3. In large bowl combine cooled pasta, tuna in chunks don't over-break, tomatoes, cucumber, olives, capers, onion and parsley. 4. Pour dressing over and toss gently. 5. Taste - usually needs more salt and lemon than you think. 6. Refrigerate 30 min if possible - pasta absorbs dressing and improves. Keeps 3 days in fridge. TIPS: Don't overdress warm pasta. Always dress when cool. Capers add lovely brininess that lifts the whole salad."},
+    {id:"r37",name:"Chicken Noodle Soup",category:"Lunch",notes:"INGREDIENTS (serves 6): 1kg chicken pieces bone-in, 2L chicken stock, 2 large carrots sliced into rounds, 3 celery stalks sliced, 1 brown onion roughly chopped, 4 garlic cloves smashed, 2 bay leaves, 5 thyme sprigs, 150g egg noodles or small pasta, 1/2 cup frozen peas, salt and pepper, parsley. METHOD: 1. Place chicken, stock, onion, garlic, bay leaves, thyme in large pot. Add water if needed to cover. Bring to boil then reduce to gentle simmer. Skim any foam from surface. 2. Simmer covered 35-40 min until chicken is fully cooked and very tender. 3. Remove chicken to board. Shred meat from bones with two forks. Discard bones, skin, bay leaves and thyme. 4. Return shredded chicken to pot. Add carrots and celery. Simmer 10 min. 5. Add noodles and peas. Cook 8 min until noodles cooked through. 6. Season generously with salt and pepper. Ladle into bowls, top with parsley. Serve with crusty bread. TIPS: Bone-in chicken gives much richer flavour than breast meat. Soup thickens as it cools - add splash of water when reheating."},
+    {id:"r38",name:"Quiche Lorraine",category:"Lunch",notes:"INGREDIENTS (serves 6): 1 sheet shortcrust pastry, 200g streaky bacon diced, 1 brown onion finely diced, 1 cup grated gruyere or tasty cheese, 4 large eggs, 1 cup thickened cream, 1/2 cup milk, salt, white pepper, pinch nutmeg. METHOD: 1. Preheat 200C. Line 23cm fluted tart tin with pastry pressing into edges. Trim excess. Refrigerate 15 min. 2. Blind bake: line with baking paper and fill with dried beans. Bake 15 min. Remove paper and beans, bake 8 min more until base looks dry and pale golden. Prevents soggy bottom. 3. Reduce to 180C. Cook bacon in dry pan until golden. Drain. In same pan cook onion in bacon fat 5 min until soft. 4. Scatter bacon and onion over pastry base. Scatter cheese on top. 5. Whisk eggs, cream, milk, salt, white pepper and nutmeg in jug. Pour slowly into pastry case. 6. Bake 30-35 min until just set - should wobble slightly in centre. Cool on wire rack 15 min before slicing. 7. Serve warm or room temperature with green salad. TIPS: Blind baking is essential - never skip it. A slightly wobbly quiche is a perfectly cooked one."},
+    {id:"r39",name:"Beef Stir-fry",category:"Dinner",notes:"INGREDIENTS (serves 4): 600g beef sirloin or scotch fillet thinly sliced against the grain, 2 heads broccolini, 150g snap peas, 1 red capsicum sliced, 3 garlic cloves, 1 tbsp fresh ginger, 2 tbsp oil, sesame seeds and spring onion to serve, rice. MARINADE: 2 tbsp soy, 1 tbsp oyster sauce, 1 tsp cornflour, 1 tsp sesame oil. SAUCE: 3 tbsp oyster sauce, 2 tbsp soy, 1 tbsp hoisin, 1 tbsp sesame oil, 1 tsp cornflour mixed with 2 tbsp water. METHOD: 1. Slice beef as thinly as possible - partially freezing 20 min makes this easier. Mix with marinade, set aside 15 min. 2. Mix sauce in bowl. 3. Heat wok over very high heat until smoking. Add 1 tbsp oil. Stir-fry beef in single layer 1 min without touching then stir-fry 1 min more. Remove to plate. 4. Add remaining oil. Stir-fry garlic and ginger 30 sec. Add broccolini and capsicum 2 min. Add snap peas 1 min. 5. Return beef. Pour sauce over and toss everything over high heat 1 min. 6. Serve over rice topped with sesame seeds and spring onion. TIPS: Slicing against grain is crucial for tender beef - cut perpendicular to the fibres. Very high heat is everything."},
+    {id:"r40",name:"Slow-Roasted Lamb Shoulder",category:"Dinner",notes:"INGREDIENTS (serves 6): 2kg bone-in lamb shoulder, 6 garlic cloves in slivers, 6 rosemary sprigs in small pieces, 3 tbsp olive oil, 1.5 tsp salt, 1 tsp pepper, 1 cup white wine or stock. GRAVY: pan juices, 1 tbsp plain flour, 1 cup extra stock. METHOD: 1. Preheat 160C. Score lamb all over with sharp knife. Push garlic slivers and rosemary into cuts. 2. Rub all over with oil, salt and pepper. 3. Place in deep roasting dish. Pour wine or stock in base. Cover tightly with baking paper then two layers of foil - seal it well. 4. Roast at 160C for 4.5-5.5 hours for 2kg shoulder until completely falling off bone when prodded with fork. 5. Remove from oven. Increase heat 220C. Remove foil and paper. Return lamb uncovered 20 min until browned and slightly crispy. 6. Rest 20 min covered loosely with foil. 7. GRAVY: Pour pan juices into saucepan. Whisk in flour over medium heat 1 min. Add stock and simmer 5 min stirring until thickened. Season. TIPS: Tight foil seal is critical - creates steam environment that makes meat incredibly tender."},
+    {id:"r41",name:"Homemade Pizza",category:"Dinner",notes:"INGREDIENTS (makes 2 large pizzas, serves 4): 2 balls store-bought pizza dough, 1/2 cup tomato passata mixed with 1 crushed garlic clove, 200g mozzarella torn or grated, toppings of choice. TOPPING IDEAS: Margherita - mozzarella, basil, olive oil. Meat Lovers - pepperoni, salami, ham, capsicum. Vegetarian - roasted capsicum, spinach, mushroom, olives, feta. METHOD: 1. Place large baking tray or pizza stone in oven and preheat to 240C for at least 30 min. Hot surface is key for crispy base. 2. On well-floured surface, roll or stretch dough as thin as possible. 3. Slide onto baking paper. Spread passata thinly leaving 2cm border. Less is more with sauce. 4. Add mozzarella and toppings. Don't overload - less toppings equals better pizza. 5. Slide pizza on baking paper directly onto preheated tray. 6. Bake 10-14 min until base golden and crispy underneath and cheese bubbling with golden spots. 7. Add fresh basil, drizzle olive oil. Slice and serve immediately. TIPS: Screaming hot oven and preheated surface are the two most important factors for good pizza at home."},
+    {id:"r42",name:"Lemon Herb Chicken Thighs",category:"Dinner",notes:"INGREDIENTS (serves 4): 8 bone-in skin-on chicken thighs, juice and zest of 2 lemons, 4 garlic cloves minced, 3 tbsp olive oil, 2 tsp dried oregano, 1 tsp dried thyme, 1 tsp sweet paprika, 1 tsp salt, 1/2 tsp black pepper. METHOD: 1. Combine lemon juice and zest, garlic, oil, oregano, thyme, paprika, salt and pepper. Add chicken thighs and turn to coat well. Marinate minimum 1 hr - overnight is significantly better. 2. Remove from fridge 30 min before cooking. Preheat oven 200C. 3. Place thighs skin-side up in single layer in baking dish. Pour remaining marinade over. 4. Bake 35-40 min until skin is deep golden and crispy and juices run clear when pierced at thickest point. For extra crispy skin turn grill on last 3-4 min and watch closely. 5. Rest 5 min. Serve with pan juices spooned over, alongside salad and flatbread or rice. TIPS: Bone-in thighs stay much juicier than breast meat. Skin-on is non-negotiable - the crispy skin is the best part."},
+    {id:"r43",name:"Sweet Potato Soup",category:"Lunch",notes:"INGREDIENTS (serves 4): 1kg sweet potato peeled and chunked, 1 brown onion roughly chopped, 4 garlic cloves, 1 tbsp fresh ginger sliced, 3 tbsp olive oil, 1 can 400ml coconut milk, 1 cup vegetable stock plus more as needed, 1 tsp cumin, 1 tsp coriander, 1/2 tsp turmeric, salt and pepper, lime juice, fresh coriander to serve. METHOD: 1. Preheat 200C. Spread sweet potato, onion, garlic and ginger on baking tray. Drizzle with oil, season. Roast 30-35 min until golden and tender. 2. Transfer everything including juices to large pot or blender. Add coconut milk, stock and spices. 3. Blend completely smooth. Adjust consistency with more stock. 4. Reheat gently. Season with salt, pepper and good squeeze of lime - lime is important, it brightens the whole soup. 5. Serve topped with fresh coriander, drizzle of coconut milk and crusty bread. TIPS: Roasting not boiling the sweet potato creates caramelised sweetness that makes this soup exceptional. Don't skip the lime juice at the end."},
+    {id:"r44",name:"Corn Fritters",category:"Breakfast",notes:"INGREDIENTS (serves 4, makes 12): 2 cans 420g corn drained or kernels from 3 fresh cobs, 1 cup plain flour, 1 tsp baking powder, 2 large eggs, 1/2 cup milk, 3 spring onions sliced, 1/2 cup fresh coriander chopped, 1 long red chilli diced optional, 1 tsp cumin, 1 tsp salt, 1/2 tsp pepper, oil for frying. TO SERVE: crispy bacon, sliced avocado, sour cream, fresh lime. METHOD: 1. Whisk flour, baking powder, eggs, milk, cumin, salt and pepper into smooth batter. 2. Fold through corn, spring onions, coriander and chilli. Batter should be thick and hold shape - add more flour if too loose. 3. Heat 2 tbsp oil in non-stick pan over medium heat. 4. Spoon about 1/4 cup batter per fritter. Flatten slightly. Cook 3-4 min until bubbles appear and edges look golden underneath. Flip and cook 2-3 min more until cooked through. 5. Drain on paper towel. Keep warm in low oven. Cook in batches adding oil as needed. 6. Serve with crispy bacon, avocado and sour cream. TIPS: Medium heat gives best result - high heat burns outside before inside cooks. Don't press down after flipping."},
+    {id:"r45",name:"Shakshuka",category:"Breakfast",notes:"INGREDIENTS (serves 4): 6 large eggs, 2 cans 400g each crushed tomatoes, 1 red capsicum diced, 1 brown onion diced, 4 garlic cloves minced, 1 jalapeno or long red chilli diced, 2 tsp sweet paprika, 1 tsp ground cumin, 1 tsp chilli powder adjust to taste, 2 tbsp olive oil, salt and pepper, crumbled feta, fresh parsley or coriander, crusty bread. METHOD: 1. Heat oil in large deep ovenproof pan over medium. Cook onion and capsicum 7-8 min until very soft. Add garlic and chilli, cook 2 min. 2. Add all spices. Stir and cook 1-2 min - spices will smell intensely fragrant. 3. Pour in tomatoes. Season. Simmer over medium-low 10-15 min until sauce has thickened noticeably. Taste - should be bold and well-spiced. 4. Make 6 wells in sauce with large spoon. Crack an egg into each well. 5. Cover with lid. Cook medium-low 8-10 min for runny yolk or 12 min for set yolk. 6. Scatter feta and fresh herbs. Serve directly from pan with lots of crusty bread for mopping. TIPS: Sauce must be thick before you add eggs - thin sauce equals poached eggs floating. Don't lift lid while eggs cook."},
+    {id:"r46",name:"Lamb Kofta",category:"Dinner",notes:"INGREDIENTS (serves 4): 600g lamb mince, 1 brown onion finely grated, 4 garlic cloves minced, 1 tsp cumin, 1 tsp coriander, 1/2 tsp cinnamon, 1/2 tsp allspice, 1/2 tsp chilli flakes, 2 tsp salt, 1/2 tsp pepper, handful flat-leaf parsley finely chopped, 8 skewers. SERVE WITH: warm pita, tzatziki see skewers recipe, tabouleh, tomato, onion, hummus, lemon. METHOD: 1. Combine all ingredients in bowl. Mix well with hands for 2 min - mixture should feel slightly sticky. 2. Refrigerate 30 min - helps kofta stay on skewer. 3. Divide into 8 portions. With wet hands mould each around a skewer in a long sausage shape pressing firmly. Refrigerate 15 min more. 4. Preheat BBQ or grill pan to high. Brush with oil. 5. Cook 3-4 min per side turning gently twice for total 10 min. Charred edges with slight crust. 6. Rest 3 min. Serve immediately with all accompaniments. TIPS: Keep everything cold until you cook - makes kofta hold shape. Wet hands when moulding prevents sticking."},
+    {id:"r47",name:"Chicken Soup",category:"Lunch",notes:"INGREDIENTS (serves 6): 1.2kg chicken pieces bone-in, 2L chicken stock, 1 brown onion diced, 4 garlic cloves, 3 carrots sliced, 3 celery stalks sliced, 1 parsnip diced optional, 2 bay leaves, 1 tsp dried thyme, 1 cup frozen peas, salt and pepper, fresh parsley, crusty bread. METHOD: 1. Heat large pot with little oil. Brown chicken pieces 2-3 min per side for extra flavour. Remove. 2. Cook onion 4 min in same pot. Add garlic 1 min. 3. Return chicken. Add stock, carrots, celery, parsnip, bay leaves and thyme. Bring to boil. Skim foam from surface. 4. Reduce to gentle simmer. Cover and cook 40 min until chicken completely tender. 5. Remove chicken. Shred meat off bones and return to pot. Discard bones and bay leaves. 6. Add frozen peas, cook 3 min. Season very generously. 7. Serve with parsley and crusty bread. TIPS: Bone-in chicken is essential for a flavourful broth. Under-seasoned soup tastes flat - be brave with salt. Freezes beautifully."},
+    {id:"r48",name:"Stuffed Capsicum",category:"Dinner",notes:"INGREDIENTS (serves 4): 4 large capsicums any colour, 400g beef or pork mince, 1 cup cooked white rice, 1 can 400g crushed tomatoes, 1 brown onion finely diced, 3 garlic cloves, 1 tsp dried oregano, 1 tsp sweet paprika, 1 cup grated cheese mozzarella or cheddar, salt and pepper, olive oil. METHOD: 1. Preheat 180C. Slice tops off capsicums and set aside. Remove seeds and white membrane. 2. Cook onion in oil 4 min. Add garlic 1 min. Add mince and cook breaking up lumps until browned. 3. Add tomatoes, oregano, paprika, salt and pepper. Simmer 5 min until slightly reduced. Remove from heat. Stir through cooked rice and half the cheese. Taste and season generously. 4. Stand capsicums upright in baking dish fitting snugly to support each other. Fill each firmly with mince mixture. 5. Replace capsicum tops. Pour 1/2 cup water into base of dish. Cover tightly with foil. 6. Bake covered 30 min. Remove foil, scatter remaining cheese over tops. Bake uncovered 15 min until capsicums tender and cheese golden. 7. Rest 5 min before serving. TIPS: Snugly fitting capsicums in dish keeps them upright. Water in base steams capsicums from below."},
+    {id:"r49",name:"Beef Lasagne",category:"Dinner",notes:"INGREDIENTS (serves 6-8): 12-15 instant lasagne sheets. BOLOGNESE: 750g beef mince, 1 large onion, 4 garlic cloves, 2 carrots, 2 celery stalks, 2 tbsp tomato paste, 1 cup red wine, 2 cans 400g each crushed tomatoes, 1 cup beef stock, 2 tsp dried oregano, salt and pepper, olive oil. BECHAMEL: 80g butter, 1/2 cup plain flour, 1L full-cream milk warm, 1/2 cup parmesan grated, pinch nutmeg, salt and white pepper. TOP: 1.5 cups grated mozzarella or cheddar, extra parmesan. METHOD: 1. BOLOGNESE: Make as per Spaghetti Bolognese recipe. Simmer minimum 45 min - longer is better. 2. BECHAMEL: Melt butter over medium heat. Add flour, stir constantly 2 min to make a roux. Gradually add warm milk a cup at a time whisking constantly to avoid lumps. Stir until sauce thickens about 8 min. Stir in parmesan and nutmeg. Season well. 3. ASSEMBLE: Spread thin layer bolognese on base of large baking dish. Layer: lasagne sheets, bolognese, bechamel. Repeat 3 times. Finish with generous bechamel on top. Scatter mozzarella and parmesan over surface. 4. Cover with foil. Bake 180C for 30 min. Remove foil, bake further 20-25 min until top golden and bubbling. 5. Rest 15 min before cutting - essential so it holds shape. TIPS: Resting after baking is critical. Cut straight away and it falls apart. Tastes even better the next day."},
+    {id:"r50",name:"Coconut Chicken Curry",category:"Dinner",notes:"INGREDIENTS (serves 4): 700g chicken thighs in chunks, 2 cans 400ml each coconut milk, 1 can 400g crushed tomatoes, 3 tbsp red curry paste adjust to preference, 1 brown onion diced, 5 garlic cloves minced, 1 tbsp fresh ginger grated, 2 tbsp oil, 2 tbsp fish sauce, 1 tbsp brown sugar, juice of 1 lime, 3 kaffir lime leaves or 1 tsp lime zest, 1 large handful baby spinach or Thai basil, steamed jasmine rice. METHOD: 1. Heat oil in large wide pan over medium-high. Cook onion 5 min. Add garlic and ginger 2 min. 2. Add curry paste. Stir and fry 2-3 min until very fragrant - this step is crucial for developing flavour. 3. Add chicken. Stir to coat and cook 3-4 min until no longer pink. 4. Pour in coconut milk and tomatoes. Add kaffir lime leaves. Bring to simmer. 5. Cook uncovered medium-low 20-25 min until chicken cooked through and sauce thickened slightly. Stir occasionally. 6. Add fish sauce, brown sugar and lime juice. Taste and adjust - you want balance of hot, sour, sweet and salty. Add more fish sauce for saltiness, lime for sourness, sugar for sweetness. 7. Stir through spinach until wilted. 8. Serve over jasmine rice with extra lime wedges. TIPS: Frying curry paste until very fragrant is the most important step. Balance of fish sauce, lime and sugar at the end transforms a good curry into a great one."}
+  ];
+}
+
+// ============================================================
+// BOOT
+// ============================================================
+window.addEventListener('DOMContentLoaded', initFirebase);
+</script>
+</body>
+</html>
+E html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Fam Plan</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Nunito+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
 <!-- Firebase SDKs -->
